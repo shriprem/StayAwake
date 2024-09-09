@@ -99,7 +99,7 @@ BOOL CStayAwakeDlg::OnInitDialog()
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
-   TrayIconInit();
+   InitTrayIcon();
    PostMessage(WM_POST_OPEN, 0, 0);
 
    return TRUE;  // return TRUE  unless you set the focus to a control
@@ -157,12 +157,17 @@ HCURSOR CStayAwakeDlg::OnQueryDragIcon()
 
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
-   ToggleScrollLock();
+   wchar_t sMulti[MAX_PATH + 1];
+   GetPrivateProfileString(PREF_DEFAULTS, PREF_MULTI_INSTANCE, L"N", sMulti, MAX_PATH, PREF_INI_FILE);
 
-   m_TimerSeconds = GetPrivateProfileInt(L"Defaults", PREFERENCES_KEY, 240, PREFERENCES_INI);
-   SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
+   if (wstring{ sMulti } != L"Y" && GetProcessRunCount(L"StayAwake.exe") > 1)
+   {
+      MessageBox(L"Another instance of StayAwake is already running.\n\nHence this instance will exit.");
+      DestroyWindow();
+      return 0;
+   }
 
-   m_TimerID = SetTimer(m_TimerID, m_TimerSeconds * 1000, NULL);
+   InitTimer();
    return 0;
 }
 
@@ -187,7 +192,17 @@ afx_msg LRESULT CStayAwakeDlg::OnTrayNotify(WPARAM wParam, LPARAM lParam)
 }
 
 
-void CStayAwakeDlg::TrayIconInit()
+void CStayAwakeDlg::InitTimer()
+{
+   ToggleScrollLock();
+
+   m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, 240, PREF_INI_FILE);
+   SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
+
+   m_TimerID = SetTimer(m_TimerID, m_TimerSeconds * 1000, NULL);
+}
+
+void CStayAwakeDlg::InitTrayIcon()
 {
    m_TrayData.cbSize = sizeof(NOTIFYICONDATA);
    m_TrayData.hWnd = this->m_hWnd;
@@ -323,6 +338,33 @@ void CStayAwakeDlg::OnSetInterval()
       return;
    }
    m_TimerSeconds = nInterval;
-   WritePrivateProfileString(L"Defaults", PREFERENCES_KEY, to_wstring(nInterval).c_str(), PREFERENCES_INI);
-   OnPostOpen(0, 0);
+   WritePrivateProfileString(PREF_DEFAULTS, PREF_TIMER_INTERVAL, to_wstring(nInterval).c_str(), PREF_INI_FILE);
+   InitTimer();
+}
+
+
+int CStayAwakeDlg::GetProcessRunCount(wstring sBaseName)
+{
+   int runCount{};
+   DWORD aProcesses[1024]{}, cbNeeded{};
+
+   if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded)) return runCount;
+
+   wchar_t szProcName[MAX_PATH];
+   HANDLE hProc{};
+
+   for (auto procID : aProcesses)
+   {
+      if (!procID) continue;
+
+      hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, procID);
+      if (!hProc) continue;
+
+      GetModuleBaseName(hProc, NULL, szProcName, sizeof(szProcName) / sizeof(wchar_t));
+      CloseHandle(hProc);
+
+      if (wstring{ szProcName } == sBaseName) runCount++;
+   }
+
+   return runCount;
 }

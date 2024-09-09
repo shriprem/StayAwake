@@ -4,11 +4,15 @@
 
 #pragma once
 
+#include <Psapi.h>
+
 #define WM_POST_OPEN    (WM_APP + 1)
 #define WM_TRAY_NOTIFY  (WM_APP + 2)
 
-constexpr auto PREFERENCES_INI = L".\\StayAwake.ini";
-constexpr auto PREFERENCES_KEY = L"TimerIntervalInSeconds";
+constexpr auto PREF_INI_FILE = L".\\StayAwake.ini";
+constexpr auto PREF_DEFAULTS = L"Defaults";
+constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
+constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
 
 #include <string>
 
@@ -58,10 +62,12 @@ private:
    afx_msg void OnDestroy();
    afx_msg void OnTimer(UINT_PTR nIDEvent);
 
-   void TrayIconInit();
+   void InitTimer();
+   void InitTrayIcon();
    void MinimizeToTray();
    void OnTrayButtonDown(CPoint pt);
    void RestoreFromTray();
    void ToggleScrollLock();
    void AddSecondsToTime(SYSTEMTIME& st, int seconds);
+   int GetProcessRunCount(wstring sBaseName);
 };
