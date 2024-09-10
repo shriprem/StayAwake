@@ -59,6 +59,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_QUERYDRAGICON()
    ON_MESSAGE(WM_POST_OPEN, &CStayAwakeDlg::OnPostOpen)
    ON_MESSAGE(WM_TRAY_NOTIFY, &CStayAwakeDlg::OnTrayNotify)
+   ON_COMMAND(IDCANCEL, &CStayAwakeDlg::OnCancel)
    ON_COMMAND(IDM_RESTORE, &CStayAwakeDlg::OnRestore)
    ON_COMMAND(IDM_EXIT, &CStayAwakeDlg::OnExit)
    ON_WM_DESTROY()
@@ -192,6 +193,13 @@ afx_msg LRESULT CStayAwakeDlg::OnTrayNotify(WPARAM wParam, LPARAM lParam)
 }
 
 
+void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
+{
+   ToggleScrollLock();
+   CDialogEx::OnTimer(nIDEvent);
+}
+
+
 void CStayAwakeDlg::InitTimer()
 {
    ToggleScrollLock();
@@ -247,15 +255,21 @@ void CStayAwakeDlg::RestoreFromTray()
 }
 
 
-void CStayAwakeDlg::OnRestore()
-{
-   RestoreFromTray();
-}
-
-
 void CStayAwakeDlg::OnMinimize()
 {
    MinimizeToTray();
+}
+
+
+void CStayAwakeDlg::OnCancel()
+{
+   MinimizeToTray();
+}
+
+
+void CStayAwakeDlg::OnRestore()
+{
+   RestoreFromTray();
 }
 
 
@@ -271,13 +285,6 @@ void CStayAwakeDlg::OnDestroy()
    m_menu.DestroyMenu();
 
    CDialogEx::OnDestroy();
-}
-
-
-void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
-{
-   ToggleScrollLock();
-   CDialogEx::OnTimer(nIDEvent);
 }
 
 

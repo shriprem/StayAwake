@@ -55,12 +55,13 @@ private:
 
    afx_msg LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);
    afx_msg LRESULT OnPostOpen(WPARAM wParam, LPARAM lParam);
-   afx_msg void OnRestore();
+   afx_msg void OnTimer(UINT_PTR nIDEvent);
    afx_msg void OnSetInterval();
    afx_msg void OnMinimize();
+   afx_msg void OnCancel();
+   afx_msg void OnRestore();
    afx_msg void OnExit();
    afx_msg void OnDestroy();
-   afx_msg void OnTimer(UINT_PTR nIDEvent);
 
    void InitTimer();
    void InitTrayIcon();
