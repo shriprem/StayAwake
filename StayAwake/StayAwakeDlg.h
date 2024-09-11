@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <Psapi.h>
-
 #define WM_POST_OPEN    (WM_APP + 1)
 #define WM_TRAY_NOTIFY  (WM_APP + 2)
 
@@ -14,10 +12,6 @@ constexpr auto PREF_DEFAULTS = L"Defaults";
 constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
 
-#include <string>
-
-using std::wstring;
-using std::to_wstring;
 
 // CStayAwakeDlg dialog
 class CStayAwakeDlg : public CDialogEx
@@ -56,6 +50,7 @@ private:
    afx_msg LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);
    afx_msg LRESULT OnPostOpen(WPARAM wParam, LPARAM lParam);
    afx_msg void OnTimer(UINT_PTR nIDEvent);
+   afx_msg void OnKillfocusInterval();
    afx_msg void OnSetInterval();
    afx_msg void OnMinimize();
    afx_msg void OnCancel();
@@ -69,6 +64,6 @@ private:
    void OnTrayButtonDown(CPoint pt);
    void RestoreFromTray();
    void ToggleScrollLock();
-   void AddSecondsToTime(SYSTEMTIME& st, int seconds);
-   int GetProcessRunCount(wstring sBaseName);
+public:
+    afx_msg void OnClickedAboutButton();
 };
