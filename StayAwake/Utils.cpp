@@ -85,7 +85,7 @@ void Utils::addSecondsToTime(SYSTEMTIME& st, int seconds) {
 wstring Utils::formatSystemTime(SYSTEMTIME& st, wstring prefix) {
    wstring sFormatted(100, '\0');
    swprintf(sFormatted.data(), 100, L"%s at: %02d:%02d:%02d %s",
-      prefix.c_str(), (st.wHour % 12), st.wMinute, st.wSecond, (st.wHour < 12 ? L"am" : L"pm"));
+      prefix.c_str(), st.wHour % 12 + ((st.wHour % 12) == 0 ? 12 : 0), st.wMinute, st.wSecond, (st.wHour < 12 ? L"am" : L"pm"));
    return sFormatted;
 }
 
