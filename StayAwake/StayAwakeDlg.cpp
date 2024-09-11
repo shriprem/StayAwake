@@ -248,7 +248,7 @@ void CStayAwakeDlg::OnKillfocusInterval()
 
    if (nInterval < 30 || nInterval > 3600)
    {
-      MessageBox(L"Please enter a value between 30 and 3600", L"Timer Interval in seconds", MB_OK);
+      Utils::showEditBalloonTip(GetDlgItem(IDC_INTERVAL)->m_hWnd, L"Timer Interval in seconds", L"Please enter a value between 30 and 3600");
       SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
       return;
    }
@@ -293,6 +293,7 @@ void CStayAwakeDlg::InitTrayIcon()
 void CStayAwakeDlg::MinimizeToTray()
 {
    if (m_bMinimized) return;
+   SendDlgItemMessage(IDC_INTERVAL, EM_HIDEBALLOONTIP, 0, 0);
 
    if (!Shell_NotifyIcon(NIM_ADD, &m_TrayData))
       MessageBox(L"Unable to Display Tray Icon", L"Error!");
@@ -373,6 +374,7 @@ void CStayAwakeDlg::ToggleScrollLock()
 
 void CStayAwakeDlg::OnSetInterval()
 {
+   OnKillfocusInterval();
    WritePrivateProfileString(PREF_DEFAULTS, PREF_TIMER_INTERVAL, to_wstring(m_TimerSeconds).c_str(), PREF_INI_FILE);
    InitTimer();
 }

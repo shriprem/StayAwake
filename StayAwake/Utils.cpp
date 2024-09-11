@@ -42,6 +42,18 @@ HWND Utils::addTooltip(HINSTANCE hApp, HWND hDlg, int controlID, const wstring& 
    return hwndTip;
 }
 
+void Utils::showEditBalloonTip(HWND hEdit, LPCWSTR title, LPCWSTR text) {
+   EDITBALLOONTIP tip{};
+
+   tip.cbStruct = sizeof(tip);
+   tip.pszTitle = title;
+   tip.pszText = text;
+   tip.ttiIcon = TTI_ERROR;
+
+   SendMessage(hEdit, EM_SHOWBALLOONTIP, NULL, (LPARAM)&tip);
+   MessageBeep(MB_OK);
+}
+
 void Utils::loadBitmap(HINSTANCE hApp, HWND hDlg, int controlID, int resource) {
    HWND hwndCtrl = GetDlgItem(hDlg, controlID);
    HBITMAP hBitmap = LoadBitmap(hApp, MAKEINTRESOURCE(resource));
