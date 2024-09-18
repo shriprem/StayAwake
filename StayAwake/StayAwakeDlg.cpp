@@ -205,6 +205,9 @@ HCURSOR CStayAwakeDlg::OnQueryDragIcon()
 
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
+   m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
+   SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
+
    wchar_t sMulti[MAX_PATH + 1];
    GetPrivateProfileString(PREF_DEFAULTS, PREF_MULTI_INSTANCE, L"N", sMulti, MAX_PATH, PREF_INI_FILE);
 
@@ -267,10 +270,6 @@ void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
 void CStayAwakeDlg::InitTimer()
 {
    ToggleScrollLock();
-
-   m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, 240, PREF_INI_FILE);
-   SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
-
    m_TimerID = SetTimer(m_TimerID, m_TimerSeconds * 1000, NULL);
 }
 
