@@ -1,86 +1,14 @@
-
-// StayAwakeDlg.cpp : implementation file
-//
-
 #include "pch.h"
 #include "framework.h"
 #include "StayAwake.h"
 #include "StayAwakeDlg.h"
+#include "StayAwakeAboutDlg.h"
 #include "afxdialogex.h"
 #include "Utils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-
-// CAboutDlg dialog used for App About
-
-class CAboutDlg : public CDialogEx
-{
-public:
-   CAboutDlg();
-
-// Dialog Data
-#ifdef AFX_DESIGN_TIME
-   enum { IDD = IDD_ABOUTBOX };
-#endif
-
-protected:
-   virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-   virtual BOOL OnInitDialog();
-   afx_msg void OnProdUrlClick(NMHDR* pNotifyStruct, LRESULT* result);
-   afx_msg void OnProdUrlReturn(NMHDR* pNotifyStruct, LRESULT* result);
-   DECLARE_MESSAGE_MAP()
-};
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-   ON_NOTIFY(NM_CLICK, IDC_ABOUT_PROD_URL, OnProdUrlClick)
-   ON_NOTIFY(NM_RETURN, IDC_ABOUT_PROD_URL, OnProdUrlReturn)
-END_MESSAGE_MAP()
-
-CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
-{
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-   CDialogEx::DoDataExchange(pDX);
-}
-
-
-BOOL CAboutDlg::OnInitDialog()
-{
-   CDialogEx::OnInitDialog();
-
-#ifdef _WIN64
-   wstring buildBit{ L" (64-bit)" };
-#else
-   wstring buildBit{ L" (32-bit)" };
-#endif // _WIN64
-
-   SetDlgItemText(IDC_ABOUT_NAME, Utils::getVersionInfo(theApp.m_hInstance, L"FileDescription").c_str());
-   SetDlgItemText(IDC_ABOUT_VERSION, (L"Version: " + Utils::getVersionInfo(theApp.m_hInstance, L"FileVersion") + buildBit).c_str());
-   SetDlgItemTextA(m_hWnd, IDC_ABOUT_BUILD_TIME, ("Build time: " + string(__DATE__) + " - " + string(__TIME__)).c_str());
-   SetDlgItemText(IDC_ABOUT_ATTRIBUTION, Utils::getVersionInfo(theApp.m_hInstance, L"LegalCopyright").c_str());
-
-   return TRUE;
-}
-
-
-afx_msg void CAboutDlg::OnProdUrlClick(NMHDR* pNotifyStruct, LRESULT* result)
-{
-   ShellExecute(NULL, L"open", Utils::getVersionInfo(theApp.m_hInstance, L"CompanyName").c_str(), NULL, NULL, SW_SHOW);
-}
-
-
-afx_msg void CAboutDlg::OnProdUrlReturn(NMHDR* pNotifyStruct, LRESULT* result)
-{
-   ShellExecute(NULL, L"open", Utils::getVersionInfo(theApp.m_hInstance, L"CompanyName").c_str(), NULL, NULL, SW_SHOW);
-}
-
-
-// CStayAwakeDlg dialog
 
 
 CStayAwakeDlg::CStayAwakeDlg(CWnd* pParent /*=nullptr*/)
@@ -96,10 +24,9 @@ void CStayAwakeDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_SYSCOMMAND()
-   ON_WM_PAINT()
-   ON_WM_QUERYDRAGICON()
    ON_MESSAGE(WM_POST_OPEN, &CStayAwakeDlg::OnPostOpen)
    ON_MESSAGE(WM_TRAY_NOTIFY, &CStayAwakeDlg::OnTrayNotify)
+   ON_REGISTERED_MESSAGE(WM_RESTORE_DIALOG, &CStayAwakeDlg::OnRestoreDialog)
    ON_COMMAND(IDCANCEL, &CStayAwakeDlg::OnCancel)
    ON_COMMAND(IDM_RESTORE, &CStayAwakeDlg::OnRestore)
    ON_COMMAND(IDM_EXIT, &CStayAwakeDlg::OnExit)
@@ -166,42 +93,6 @@ void CStayAwakeDlg::OnSysCommand(UINT nID, LPARAM lParam)
    }
 }
 
-// If you add a minimize button to your dialog, you will need the code below
-//  to draw the icon.  For MFC applications using the document/view model,
-//  this is automatically done for you by the framework.
-
-void CStayAwakeDlg::OnPaint()
-{
-   if (IsIconic())
-   {
-      CPaintDC dc(this); // device context for painting
-
-      SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-      // Center icon in client rectangle
-      int cxIcon = GetSystemMetrics(SM_CXICON);
-      int cyIcon = GetSystemMetrics(SM_CYICON);
-      CRect rect;
-      GetClientRect(&rect);
-      int x = (rect.Width() - cxIcon + 1) / 2;
-      int y = (rect.Height() - cyIcon + 1) / 2;
-
-      // Draw the icon
-      dc.DrawIcon(x, y, m_hIcon);
-   }
-   else
-   {
-      CDialogEx::OnPaint();
-   }
-}
-
-// The system calls this function to obtain the cursor to display while the user drags
-//  the minimized window.
-HCURSOR CStayAwakeDlg::OnQueryDragIcon()
-{
-   return static_cast<HCURSOR>(m_hIcon);
-}
-
 
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
@@ -213,7 +104,8 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 
    if (wstring{ sMulti } != L"Y" && Utils::getProcessRunCount(L"StayAwake.exe") > 1)
    {
-      MessageBox(L"Another instance of StayAwake is already running.\n\nHence this instance will exit.");
+      ::PostMessage(HWND_BROADCAST, theApp.WM_SHOWFIRSTINSTANCE, 0, 0);
+
       DestroyWindow();
       return 0;
    }
@@ -239,6 +131,13 @@ afx_msg LRESULT CStayAwakeDlg::OnTrayNotify(WPARAM wParam, LPARAM lParam)
       break;
    }
 
+   return 0;
+}
+
+afx_msg LRESULT CStayAwakeDlg::OnRestoreDialog(WPARAM wParam, LPARAM lParam)
+{
+   RestoreFromTray();
+   SetForegroundWindow();
    return 0;
 }
 
