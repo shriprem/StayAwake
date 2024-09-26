@@ -10,6 +10,8 @@ constexpr auto PREF_DEFAULTS = L"Defaults";
 constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
 
+constexpr auto MIN_PERIOD{ 10 };
+constexpr auto MAX_PERIOD{ 9990 };
 
 class CStayAwakeDlg : public CDialogEx
 {

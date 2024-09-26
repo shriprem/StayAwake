@@ -70,7 +70,8 @@ BOOL CStayAwakeDlg::OnInitDialog()
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_INTERVAL, L"", L"Number between 30 and 3600", 3, TRUE);
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_INTERVAL, L"",
+      wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
    Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, L"", L"About StayAwake", 3, TRUE);
    Utils::loadBitmap(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, IDB_ABOUT_BITMAP);
 
@@ -148,9 +149,10 @@ void CStayAwakeDlg::OnKillfocusInterval()
 
    nInterval = GetDlgItemInt(IDC_INTERVAL, nullptr, FALSE);
 
-   if (nInterval < 30 || nInterval > 3600)
+   if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_INTERVAL)->m_hWnd, L"Timer Interval in seconds", L"Please enter a value between 30 and 3600");
+      Utils::showEditBalloonTip(GetDlgItem(IDC_INTERVAL)->m_hWnd, L"Timer Interval in seconds",
+         (wstring{ L"Please enter a value between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD)).c_str());
       SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
       return;
    }
