@@ -18,7 +18,7 @@ If you are using Microsoft Teams, you may have noticed that Teams automatically 
 
 StayAwake is a lightweight application that can be minimized to the Windows System Tray, and will continue to run in the background until you click the _Exit_ button in the application.
 
-StayAwake does its job by periodically cycling  the _Scroll Lock_ button (_i.e._, toggling once, and then immediately toggling again to restore _Scroll Lock_ back to its original state). Since the _Scroll Lock_ button is not used by most applications or users, this is a safe, non-intrusive way to keep your Microsoft Teams status _Active_.
+StayAwake does its job by periodically cycling  the _Scroll Lock_ button (_i.e._, toggling once, and then immediately toggling again to restore _Scroll Lock_ back to its original state). Since the _Scroll Lock_ button is not used by most applications or users, this is a safe and non-intrusive way to keep your Microsoft Teams status _Active_.
 
 ## User Interface
 ![StayAwake UI](https://github.com/shriprem/StayAwake/blob/main/images/StayAwakeApp.png)
@@ -44,8 +44,13 @@ When you minimize the application, it will be represented by the System Tray ico
 
 * **Exit**: Click this to exit the application.
 
+
 ## Installation
 
-StayAwake is a portable application and does not require installation. Simply download the latest release from the [Releases](https://github.com/shriprem/StayAwake/releases/tag/v1.0.0.2) page and unzip the contents to a folder of your choice. Run the `StayAwake.exe` application to start the utility.
+StayAwake is a portable application and does NOT require installation with administrator privileges. Simply download the latest release from the [Releases](https://github.com/shriprem/StayAwake/releases/tag/v1.0.0.2) page and unzip the contents to a folder of your choice. Run the `StayAwake.exe` application to start the utility.
+
+
+## See Also
+StayAwake is also available as a [plugin for Notepad++](https://github.com/shriprem/StayAwake_NPP_Plugin). This version can be useful if you have Notepad++ open during your typical workday. You will be spared the need to separately run the standalone StayAwake application.
 
 <a href='https://ko-fi.com/S6S417WICS' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
