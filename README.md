@@ -47,7 +47,7 @@ When you minimize the application, it will be represented by the System Tray ico
 
 ## Installation
 
-StayAwake is a portable application and does NOT require installation with administrator privileges. Simply download the latest release from the [Releases](https://github.com/shriprem/StayAwake/releases/tag/v1.0.0.2) page and unzip the contents to a folder of your choice. Run the `StayAwake.exe` application to start the utility.
+StayAwake is a portable application and does NOT require installation with administrator privileges. Simply download the latest release from the [Releases](https://github.com/shriprem/StayAwake/releases) page and unzip the contents to a folder of your choice. Run the `StayAwake.exe` application to start the utility.
 
 
 ## See Also
