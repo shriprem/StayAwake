@@ -8,8 +8,6 @@
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/shriprem/StayAwake/CI_build.yml)
 ![GitHub issues](https://img.shields.io/github/issues/shriprem/StayAwake)
 
-<a href='https://ko-fi.com/S6S417WICS' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-
 [Current Version: 1.0.0.2](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
 
 StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (and perhaps other such messaging applications).
