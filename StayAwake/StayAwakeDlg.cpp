@@ -98,6 +98,8 @@ void CStayAwakeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
    m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
+   if (m_TimerSeconds < MIN_PERIOD || m_TimerSeconds > MAX_PERIOD)
+      m_TimerSeconds = 240;
    SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
 
    wchar_t sMulti[MAX_PATH + 1];

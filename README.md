@@ -8,9 +8,9 @@
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/shriprem/StayAwake/CI_build.yml)
 ![GitHub issues](https://img.shields.io/github/issues/shriprem/StayAwake)
 
-[Current Version: 1.0.0.2](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
+[Current Version: 1.0.0.3](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
 
-StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (and perhaps other such messaging applications).
+StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (and perhaps other such messaging applications). StayAwake also blocks screen saver activation, screen blanking, and session lockouts.
 
 If you are using Microsoft Teams, you may have noticed that Teams automatically sets your status to _Away_ after a certain period of inactivity. This can be frustrating if you are still at your desk but perhaps on a business phone call _OR_ outlining a plan on paper _OR_ consulting some reference material.
 
@@ -41,6 +41,15 @@ When you minimize the application, it will be represented by the System Tray ico
 * **Restore**: Click this to restore the application window.
 
 * **Exit**: Click this to exit the application.
+
+
+## Configuration File Details
+StayAwake saves its configuration in a file named `StayAwakeConfig.ini`. This file is co-located in the `StayAwake.exe` application file folder. Two key settings may be configured in this file:
+1. `SecondsBetweenToggles`: This key stores the number of seconds between each _Scroll Lock_ toggle. [_Note that this is the same value that is wired to the **Seconds between each toggle** field on the application UI. See under: [User Interface](https://github.com/shriprem/StayAwake?tab=readme-ov-file#user-interface)_].
+
+	The `TimerIntervalInSeconds` value must be an integer between 10 and 9990. Values outside this range will be ignored and the default value of 240 seconds will be used instead.
+
+2. `MultipleInstancesAllowed`: This key stores a flag value (_Y_ or _N_) to indicate whether multiple instances of the application are allowed to run simultaneously. The default value is _N_ (i.e., multiple instances are not allowed). Any value that is not _Y_ will be interpreted as _N_.
 
 
 ## Installation
