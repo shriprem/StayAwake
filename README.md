@@ -10,13 +10,22 @@
 
 [Current Version: 1.0.0.3](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
 
-StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (and perhaps other such messaging applications). StayAwake also blocks screen saver activation, screen blanking, and session lockouts.
+StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (or Slack and perhaps other such messaging applications). StayAwake also blocks screen saver activation, screen blanking, and session lockouts.
 
 If you are using Microsoft Teams, you may have noticed that Teams automatically sets your status to _Away_ after a certain period of inactivity. This can be frustrating if you are still at your desk but perhaps on a business phone call _OR_ outlining a plan on paper _OR_ consulting some reference material.
 
 StayAwake is a lightweight application that can be minimized to the Windows System Tray, and will continue to run in the background until you click the _Exit_ button in the application.
 
 StayAwake does its job by periodically cycling  the _Scroll Lock_ button (_i.e._, toggling once, and then immediately toggling again to restore _Scroll Lock_ back to its original state). Since the _Scroll Lock_ button is not used by most applications or users, this is a safe and non-intrusive way to keep your Microsoft Teams status _Active_.
+
+### Helpful Tip
+If you are only looking for a way to block screen saver activation and session lockouts, you do not actually need *StayAwake*. Instead, you can simply open a PDF document in full screen mode in Adobe Acrobat (Reader | Professional), and leave it open in the background. This will prevent your screen saver from activating, and also prevent your Windows session from locking out.
+
+**Note**: Full screen mode is different than maximized window state. To view a PDF document in full screen mode in Adobe Acrobat (Reader | Professional), either use:
+* The menu option: *View » Full screen mode*
+* Or the much quicker keyboard shortcut: *Ctrl + L*.
+
+However, if you are looking for a way to keep your Microsoft Teams status _Active_, then StayAwake is the right tool for you.
 
 ## User Interface
 ![StayAwake UI](https://github.com/shriprem/StayAwake/blob/main/images/StayAwakeApp.png)
