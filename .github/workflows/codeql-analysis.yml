@@ -60,5 +60,5 @@ jobs:
       working-directory: StayAwake
       run: msbuild StayAwake.vcxproj /m /p:configuration="Release" /p:platform="x64" /p:PlatformToolset="v143"
 
-    #- name: Perform CodeQL Analysis
-    #  uses: github/codeql-action/analyze@v3
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
