@@ -33,8 +33,8 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_DESTROY()
    ON_WM_TIMER()
    ON_BN_CLICKED(IDC_MINIMIZE, &CStayAwakeDlg::OnMinimize)
-   ON_BN_CLICKED(IDC_SET_INTERVAL, &CStayAwakeDlg::OnSetInterval)
-   ON_EN_KILLFOCUS(IDC_INTERVAL, &CStayAwakeDlg::OnKillfocusInterval)
+   ON_BN_CLICKED(IDC_STAYAWAKE_SET_INTERVAL_BTN, &CStayAwakeDlg::OnSetInterval)
+   ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL, &CStayAwakeDlg::OnKillfocusInterval)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
 END_MESSAGE_MAP()
 
@@ -70,7 +70,7 @@ BOOL CStayAwakeDlg::OnInitDialog()
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_INTERVAL, L"",
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL, L"",
       wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
    Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, L"", L"About StayAwake", 3, TRUE);
    Utils::loadBitmap(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, IDB_ABOUT_BITMAP);
@@ -100,7 +100,7 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
    m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
    if (m_TimerSeconds < MIN_PERIOD || m_TimerSeconds > MAX_PERIOD)
       m_TimerSeconds = 240;
-   SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
+   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL, m_TimerSeconds, FALSE);
 
    wchar_t sMulti[MAX_PATH + 1];
    GetPrivateProfileString(PREF_DEFAULTS, PREF_MULTI_INSTANCE, L"N", sMulti, MAX_PATH, PREF_INI_FILE);
@@ -149,13 +149,13 @@ void CStayAwakeDlg::OnKillfocusInterval()
 {
    int nInterval{};
 
-   nInterval = GetDlgItemInt(IDC_INTERVAL, nullptr, FALSE);
+   nInterval = GetDlgItemInt(IDC_STAYAWAKE_INTERVAL, nullptr, FALSE);
 
    if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_INTERVAL)->m_hWnd, L"Timer Interval in seconds",
+      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL)->m_hWnd, L"Timer Interval in seconds",
          (wstring{ L"Please enter a value between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD)).c_str());
-      SetDlgItemInt(IDC_INTERVAL, m_TimerSeconds, FALSE);
+      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL, m_TimerSeconds, FALSE);
       return;
    }
 
@@ -195,7 +195,7 @@ void CStayAwakeDlg::InitTrayIcon()
 void CStayAwakeDlg::MinimizeToTray()
 {
    if (m_bMinimized) return;
-   SendDlgItemMessage(IDC_INTERVAL, EM_HIDEBALLOONTIP, 0, 0);
+   SendDlgItemMessage(IDC_STAYAWAKE_INTERVAL, EM_HIDEBALLOONTIP, 0, 0);
 
    if (!Shell_NotifyIcon(NIM_ADD, &m_TrayData))
       MessageBox(L"Unable to Display Tray Icon", L"Error!");
@@ -265,12 +265,12 @@ void CStayAwakeDlg::ToggleScrollLock()
 
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
-   SetDlgItemText(IDC_STATIC_LAST_TOGGLE, Utils::formatSystemTime(lastTime, L"Scroll Lock was last toggled").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_LAST_TOGGLE, Utils::formatSystemTime(lastTime, L"Scroll Lock was last toggled").c_str());
 
    SYSTEMTIME nextTime{};
    GetSystemTime(&nextTime);
    Utils::addSecondsToTime(nextTime, m_TimerSeconds);
-   SetDlgItemText(IDC_STATIC_NEXT_TOGGLE, Utils::formatSystemTime(nextTime, L"Scroll Lock will next toggle").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_NEXT_TOGGLE, Utils::formatSystemTime(nextTime, L"Scroll Lock will next toggle").c_str());
 }
 
 
