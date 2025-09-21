@@ -17,6 +17,7 @@
 #define IDC_STAYAWAKE_SET_INTERVAL_BTN  1005
 #define IDC_STAYAWAKE_LAST_TOGGLE       1006
 #define IDC_STAYAWAKE_NEXT_TOGGLE       1007
+#define IDC_STAYAWAKE_PAUSE_RESUME_BTN  1008
 #define IDC_MINIMIZE                    1009
 #define IDC_ABOUT_BUTTON                1010
 #define IDC_ABOUT_NAME                  1021

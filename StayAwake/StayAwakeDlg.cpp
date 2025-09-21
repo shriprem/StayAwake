@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL, &CStayAwakeDlg::OnKillfocusInterval)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
    ON_CBN_SELCHANGE(IDC_STAYAWAKE_KEY_LIST, &CStayAwakeDlg::OnStayawakeKeyChange)
+   ON_BN_CLICKED(IDC_STAYAWAKE_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResume)
 END_MESSAGE_MAP()
 
 
@@ -71,8 +72,30 @@ BOOL CStayAwakeDlg::OnInitDialog()
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
+   // Init KeyCodes List
+   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Scroll Lock cycling");
+   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Volume Down & Up");
+
+   for (int i{ 1 }; i <= 10; i++) {
+      SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)(L"Unassigned Key #" + to_wstring(i)).c_str());
+   }
+
+   m_AwakeKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, m_TimerSeconds, PREF_INI_FILE);
+   m_AwakeKeyCode %= 12;
+
+   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_SETCURSEL, m_AwakeKeyCode, NULL);
+
+   // Init Timer Seconds
+   m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
+   if (m_TimerSeconds < MIN_PERIOD || m_TimerSeconds > MAX_PERIOD)
+      m_TimerSeconds = 240;
+   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL, m_TimerSeconds, FALSE);
+
    Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL, L"",
       wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
+
+   SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, IsTimerPaused() ? BTN_TEXT_RESUME : BTN_TEXT_PAUSE);
+
    Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, L"", L"About StayAwake", 3, TRUE);
    Utils::loadBitmap(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, IDB_ABOUT_BITMAP);
 
@@ -98,29 +121,7 @@ void CStayAwakeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
-   // Init KeyCodes List
-   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Scroll Lock toggles");
-   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Volume Down & Up");
-
-   for (int i{ 1 }; i <= 10; i++) {
-      SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)(L"Unassigned Key #" + to_wstring(i)).c_str());
-   }
-
-   m_AwakeKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, m_TimerSeconds, PREF_INI_FILE);
-   m_AwakeKeyCode %= 12;
-
-   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_SETCURSEL, m_AwakeKeyCode, NULL);
-
-   // Init Timer Seconds
-   m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
-   if (m_TimerSeconds < MIN_PERIOD || m_TimerSeconds > MAX_PERIOD)
-      m_TimerSeconds = 240;
-   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL, m_TimerSeconds, FALSE);
-
-   wchar_t sMulti[MAX_PATH + 1];
-   GetPrivateProfileString(PREF_DEFAULTS, PREF_MULTI_INSTANCE, L"N", sMulti, MAX_PATH, PREF_INI_FILE);
-
-   if (wstring{ sMulti } != L"Y" && Utils::getProcessRunCount(L"StayAwake.exe") > 1)
+   if (GetPreference(PREF_MULTI_INSTANCE, L"N") != L"Y" && Utils::getProcessRunCount(L"StayAwake.exe") > 1)
    {
       ::PostMessage(HWND_BROADCAST, theApp.WM_SHOWFIRSTINSTANCE, 0, 0);
 
@@ -128,7 +129,11 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
       return 0;
    }
 
-   InitTimer();
+   if (IsTimerPaused())
+      ShowPausedInfo(TRUE);
+   else
+      InitTimer();
+
    return 0;
 }
 
@@ -189,6 +194,9 @@ void CStayAwakeDlg::InitTimer()
 {
    SimulateAwakeKeyPress();
    m_TimerID = SetTimer(m_TimerID, m_TimerSeconds * 1000, NULL);
+
+   SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
+   WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_PAUSED, L"N", PREF_INI_FILE);
 }
 
 void CStayAwakeDlg::InitTrayIcon()
@@ -341,4 +349,41 @@ void CStayAwakeDlg::OnStayawakeKeyChange()
    m_AwakeKeyCode = static_cast<int>(SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_GETCURSEL, 0, 0));
    m_AwakeKeyCode %= 12;
    WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, to_wstring(m_AwakeKeyCode).c_str(), PREF_INI_FILE);
+}
+
+void CStayAwakeDlg::OnPauseResume()
+{
+   if (IsTimerPaused()) {
+      InitTimer();
+   }
+   else {
+      KillTimer(m_TimerID);
+
+      SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_RESUME);
+      WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_PAUSED, L"Y", PREF_INI_FILE);
+      ShowPausedInfo(false);
+   }
+}
+
+wstring CStayAwakeDlg::GetPreference(wstring key, wstring defaultVal)
+{
+   const int bufSize{ MAX_PATH };
+   wstring ftBuf(bufSize, '\0');
+
+   GetPrivateProfileString(PREF_DEFAULTS, key.c_str(), defaultVal.c_str(), ftBuf.data(), bufSize, PREF_INI_FILE);
+
+   return wstring{ ftBuf.c_str() };
+}
+
+bool CStayAwakeDlg::IsTimerPaused()
+{
+   return (GetPreference(PREF_AWAKE_PAUSED, L"N") == L"Y");
+}
+
+void CStayAwakeDlg::ShowPausedInfo(bool both)
+{
+   if (both)
+      SetDlgItemText(IDC_STAYAWAKE_LAST_TOGGLE, L"Last StayAwake event:         PAUSED");
+
+   SetDlgItemText(IDC_STAYAWAKE_NEXT_TOGGLE, L"Next StayAwake event:         PAUSED");
 }

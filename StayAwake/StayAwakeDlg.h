@@ -1,16 +1,20 @@
-
 #pragma once
+
+#include "Utils.h"
 
 #define WM_POST_OPEN       (WM_APP + 1)
 #define WM_TRAY_NOTIFY     (WM_APP + 2)
 #define WM_RESTORE_DIALOG  theApp.WM_SHOWFIRSTINSTANCE
 
-#define VK_UNASSIGNED_01 0x97
-#define VK_UNASSIGNED_10 0xE8
+constexpr auto VK_UNASSIGNED_01 = 0x97;
+constexpr auto VK_UNASSIGNED_10 = 0xE8;
 
+constexpr auto BTN_TEXT_PAUSE = L"&Pause";
+constexpr auto BTN_TEXT_RESUME = L"&Resume";
 constexpr auto PREF_INI_FILE = L".\\StayAwake.ini";
 constexpr auto PREF_DEFAULTS = L"Defaults";
 constexpr auto PREF_AWAKE_KEYCODE = L"AwakeKeyCode";
+constexpr auto PREF_AWAKE_PAUSED = L"AwakePaused";
 constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
 
@@ -52,6 +56,7 @@ private:
    afx_msg void OnKillfocusInterval();
    afx_msg void OnStayawakeKeyChange();
    afx_msg void OnSetInterval();
+   afx_msg void OnPauseResume();
    afx_msg void OnMinimize();
    afx_msg void OnClickedAboutButton();
    afx_msg void OnCancel();
@@ -65,5 +70,8 @@ private:
    void OnTrayButtonDown(CPoint pt);
    void RestoreFromTray();
    void SimulateAwakeKeyPress();
-public:
+   void ShowPausedInfo(bool both);
+
+   wstring GetPreference(wstring key, wstring defaultVal);
+   bool IsTimerPaused();
 };
