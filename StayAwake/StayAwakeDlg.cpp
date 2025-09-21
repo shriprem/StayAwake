@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_BN_CLICKED(IDC_STAYAWAKE_SET_INTERVAL_BTN, &CStayAwakeDlg::OnSetInterval)
    ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL, &CStayAwakeDlg::OnKillfocusInterval)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
+   ON_CBN_SELCHANGE(IDC_STAYAWAKE_KEY_LIST, &CStayAwakeDlg::OnStayawakeKeyChange)
 END_MESSAGE_MAP()
 
 
@@ -97,6 +98,20 @@ void CStayAwakeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
+   // Init KeyCodes List
+   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Scroll Lock toggles");
+   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Volume Down & Up");
+
+   for (int i{ 1 }; i <= 10; i++) {
+      SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)(L"Unassigned Key #" + to_wstring(i)).c_str());
+   }
+
+   m_AwakeKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, m_TimerSeconds, PREF_INI_FILE);
+   m_AwakeKeyCode %= 12;
+
+   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_SETCURSEL, m_AwakeKeyCode, NULL);
+
+   // Init Timer Seconds
    m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
    if (m_TimerSeconds < MIN_PERIOD || m_TimerSeconds > MAX_PERIOD)
       m_TimerSeconds = 240;
@@ -165,14 +180,14 @@ void CStayAwakeDlg::OnKillfocusInterval()
 
 void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
 {
-   ToggleScrollLock();
+   SimulateAwakeKeyPress();
    CDialogEx::OnTimer(nIDEvent);
 }
 
 
 void CStayAwakeDlg::InitTimer()
 {
-   ToggleScrollLock();
+   SimulateAwakeKeyPress();
    m_TimerID = SetTimer(m_TimerID, m_TimerSeconds * 1000, NULL);
 }
 
@@ -255,22 +270,55 @@ void CStayAwakeDlg::OnDestroy()
 }
 
 
-void CStayAwakeDlg::ToggleScrollLock()
+void CStayAwakeDlg::SimulateAwakeKeyPress()
 {
-   keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-   keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-   Sleep(10);
-   keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-   keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+   switch (m_AwakeKeyCode) {
+   case 1:
+      keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+      keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      Sleep(10);
+      keybd_event(VK_VOLUME_UP, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+      keybd_event(VK_VOLUME_UP, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      break;
+
+   case 2:
+   case 3:
+   case 4:
+   case 5:
+   case 6:
+   case 7:
+   case 8:
+   case 9:
+   case 10:
+   {
+      BYTE keycode{ static_cast<BYTE>(VK_UNASSIGNED_01 + m_AwakeKeyCode - 2) };
+      keybd_event(keycode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+      keybd_event(keycode, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      break;
+   }
+
+   case 11:
+      keybd_event(VK_UNASSIGNED_10, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+      keybd_event(VK_UNASSIGNED_10, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      break;
+
+   default:
+      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      Sleep(10);
+      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      break;
+   }
 
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
-   SetDlgItemText(IDC_STAYAWAKE_LAST_TOGGLE, Utils::formatSystemTime(lastTime, L"Scroll Lock was last toggled").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_LAST_TOGGLE, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
 
    SYSTEMTIME nextTime{};
    GetSystemTime(&nextTime);
    Utils::addSecondsToTime(nextTime, m_TimerSeconds);
-   SetDlgItemText(IDC_STAYAWAKE_NEXT_TOGGLE, Utils::formatSystemTime(nextTime, L"Scroll Lock will next toggle").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_NEXT_TOGGLE, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
 }
 
 
@@ -286,4 +334,11 @@ void CStayAwakeDlg::OnClickedAboutButton()
 {
    CAboutDlg dlgAbout;
    dlgAbout.DoModal();
+}
+
+void CStayAwakeDlg::OnStayawakeKeyChange()
+{
+   m_AwakeKeyCode = static_cast<int>(SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_GETCURSEL, 0, 0));
+   m_AwakeKeyCode %= 12;
+   WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, to_wstring(m_AwakeKeyCode).c_str(), PREF_INI_FILE);
 }

@@ -5,8 +5,12 @@
 #define WM_TRAY_NOTIFY     (WM_APP + 2)
 #define WM_RESTORE_DIALOG  theApp.WM_SHOWFIRSTINSTANCE
 
+#define VK_UNASSIGNED_01 0x97
+#define VK_UNASSIGNED_10 0xE8
+
 constexpr auto PREF_INI_FILE = L".\\StayAwake.ini";
 constexpr auto PREF_DEFAULTS = L"Defaults";
+constexpr auto PREF_AWAKE_KEYCODE = L"AwakeKeyCode";
 constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
 
@@ -35,7 +39,8 @@ protected:
 
 private:
    bool m_bMinimized{};
-   UINT_PTR m_TimerID{};
+   UINT_PTR m_TimerID{42};
+   UINT m_AwakeKeyCode{ 0 };
    UINT m_TimerSeconds{ 240 };
    NOTIFYICONDATA m_TrayData{};
    CMenu m_menu;
@@ -45,6 +50,7 @@ private:
    afx_msg LRESULT OnRestoreDialog(WPARAM wParam, LPARAM lParam);
    afx_msg void OnTimer(UINT_PTR nIDEvent);
    afx_msg void OnKillfocusInterval();
+   afx_msg void OnStayawakeKeyChange();
    afx_msg void OnSetInterval();
    afx_msg void OnMinimize();
    afx_msg void OnClickedAboutButton();
@@ -58,5 +64,6 @@ private:
    void MinimizeToTray();
    void OnTrayButtonDown(CPoint pt);
    void RestoreFromTray();
-   void ToggleScrollLock();
+   void SimulateAwakeKeyPress();
+public:
 };
