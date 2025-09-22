@@ -321,12 +321,12 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
 
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
-   SetDlgItemText(IDC_STAYAWAKE_LAST_TOGGLE, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
 
    SYSTEMTIME nextTime{};
    GetSystemTime(&nextTime);
    Utils::addSecondsToTime(nextTime, m_TimerSeconds);
-   SetDlgItemText(IDC_STAYAWAKE_NEXT_TOGGLE, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
 }
 
 
@@ -383,7 +383,7 @@ bool CStayAwakeDlg::IsTimerPaused()
 void CStayAwakeDlg::ShowPausedInfo(bool both)
 {
    if (both)
-      SetDlgItemText(IDC_STAYAWAKE_LAST_TOGGLE, L"Last StayAwake event:         PAUSED");
+      SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, L"Last StayAwake event:         PAUSED");
 
-   SetDlgItemText(IDC_STAYAWAKE_NEXT_TOGGLE, L"Next StayAwake event:         PAUSED");
+   SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, L"Next StayAwake event:         PAUSED");
 }
