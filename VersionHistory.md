@@ -3,9 +3,9 @@
 ### Version 1.1.0.0 [September 27, 2025]
 
 #### Enhancements
-1. StayAwake now offers a choice from **12 keycode simulations** to better serve individual user situations.
+1. StayAwake now offers a choice from [12 keycode simulations](https://github.com/shriprem/StayAwake?tab=readme-ov-file#key-simulation-options) to better serve individual user situations.
 
-2. Added **Pause/Resume** button to pause or resume the timer-based key simulations.
+2. Added [Pause/Resume](https://github.com/shriprem/StayAwake?tab=readme-ov-file#pause-button) button to pause or resume the timer-based key simulations.
 
 
 **Release:** [1.1.0.0 Release](https://github.com/shriprem/StayAwake/releases/tag/v1.1.0.0)
