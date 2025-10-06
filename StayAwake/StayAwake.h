@@ -6,6 +6,7 @@
 
 #include "resource.h"
 
+#define LAST_CODE_UPDATE_TIME "Oct 05 2025 - 22:20:42"
 
 class CStayAwakeApp : public CWinApp
 {
