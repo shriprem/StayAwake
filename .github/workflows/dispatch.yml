@@ -1,4 +1,6 @@
 # dispatch.yml
+name: OSSign Dispatch
+
 on:
   push:
     tags: ['pre-v*.*.*.*']

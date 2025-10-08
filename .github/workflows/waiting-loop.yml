@@ -1,4 +1,6 @@
 # waiting-loop.yml
+name: OSSign Waiting Loop
+
 on:
   workflow_dispatch:
     inputs:
