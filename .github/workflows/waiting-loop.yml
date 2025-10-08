@@ -1,0 +1,66 @@
+# waiting-loop.yml
+on:
+  workflow_dispatch:
+    inputs:
+      workflow_id:
+        description: 'The workflow ID from dispatch'
+        required: true
+        type: string
+      attempt:
+        required: false
+        description: 'The attempt number'
+        type: number
+        default: 1
+      max_attempts:
+        required: false
+        description: 'The maximum number of attempts (times the waiting period duration you set in the environment gives the max wait time, e.g. 30 minutes * 48 = 24 hours)'
+        type: number
+        default: 100
+
+jobs:
+    wait-and-check:
+        runs-on: ubuntu-latest
+        environment: Signatures
+        permissions:
+          # Needs actions: write to be able to dispatch workflows
+          actions: write
+          contents: read
+        steps:
+          - name: Check if the threshold has been reached
+            shell: bash
+            run: |
+                if [ ${{ github.event.inputs.attempt }} -gt ${{ github.event.inputs.max_attempts }} ]; then
+                  echo "Maximum number of attempts reached, exiting."
+                  exit 1
+                fi
+        
+          - name: Check if signing is finished
+            id: check
+            uses: ossign/actions/workflow/dispatch@main
+            with:
+              username: ${{ secrets.OSSIGN_USER }}
+              token: ${{ secrets.OSSIGN_TOKEN }}
+              single_check: ${{ github.event.inputs.workflow_id }}
+        
+          - name: If artifacts were returned, we are done!
+            if: steps.check.outputs.signed_artifacts != ''
+            run: |
+               echo "Signing complete, signed artifacts: ${{ steps.check.outputs.signed_artifacts }}"
+
+          - name: Increase attempt counter
+            if: steps.check.outputs.signed_artifacts == ''
+            id: increased
+            run: |
+              echo "Attempt ${{ github.event.inputs.attempt }} failed, will try again."
+              echo "attempt_no=$(( ${{ github.event.inputs.attempt }} + 1 ))" >> $GITHUB_OUTPUT
+
+          - name: If signing is not finished, restart the workflow
+            if: steps.check.outputs.signed_artifacts == ''
+            uses: benc-uk/workflow-dispatch@v1
+            with:
+              workflow: waiting-loop.yml
+              inputs: |
+                { 
+                    "workflow_id": "${{ github.event.inputs.workflow_id }}",
+                    "attempt": "${{ steps.increased.outputs.attempt_no }}"
+                }

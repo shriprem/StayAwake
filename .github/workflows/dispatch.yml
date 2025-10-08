@@ -1,0 +1,32 @@
+# dispatch.yml
+on:
+  push:
+    tags: ['pre-v*.*.*.*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      # Needs actions: write to be able to dispatch workflows
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: ossign/actions/workflow/dispatch@main
+        id: dispatch
+        with:
+          username: ${{ secrets.OSSIGN_USER }}
+          token: ${{ secrets.OSSIGN_TOKEN }}
+          dispatch_only: true
+    
+      - run: |
+          echo "Received workflow ID: ${{ steps.dispatch.outputs.workflow_id }}"
+    
+      - name: Start the waiting loop
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: waiting-loop.yml
+          inputs: |
+            { "workflow_id": "${{ steps.dispatch.outputs.workflow_id }}" }
