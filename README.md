@@ -7,9 +7,11 @@
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/shriprem/StayAwake)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/shriprem/StayAwake/CI_build.yml)
 ![GitHub issues](https://img.shields.io/github/issues/shriprem/StayAwake)
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a style="float:right;" href="https://www.ossign.org"><img style="height:50px; width:50px; float:right" src="images/OSSign.jpeg"/></a>
+
 
 [Current Version: 1.2.0.0](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
-<a style="float:right;" href="https://www.ossign.org"><img style="height:50px; width:50px;" src="images/OSSign.jpeg"/></a>
 
 StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (and perhaps other messaging applications such as Slack and Zoom). StayAwake also prevents screen saver activation, screen blanking, and Windows session lockouts.
 
