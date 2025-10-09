@@ -3,9 +3,11 @@
 ### Version 1.2.0.0 [October 8, 2025]
 
 #### Enhancements
+
+
 1. StayAwake executable is now digitally signed by the kind folks at [OSSign](https://ossign.org). Thank you!
 
-
+   <a title="OSSign - Code Signing for Open Source" href="https://www.ossign.org"><img style="height:75px; width:75px;" src="images/OSSign.jpeg"/></a>
 
 **Release:** [1.2.0.0 Release](https://github.com/shriprem/StayAwake/releases/tag/v1.2.0.0)
 
