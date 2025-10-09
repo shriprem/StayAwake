@@ -8,7 +8,7 @@
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/shriprem/StayAwake/CI_build.yml)
 ![GitHub issues](https://img.shields.io/github/issues/shriprem/StayAwake)
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a style="float:right;" href="https://www.ossign.org"><img style="height:50px; width:50px; float:right" src="images/OSSign.jpeg"/></a>
+<a style="float:right;" title="OSSign - Code Signing for Open Source" href="https://www.ossign.org"><img style="height:50px; width:50px; float:right" src="images/OSSign.jpeg"/></a>
 
 
 [Current Version: 1.2.0.0](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
