@@ -5,7 +5,7 @@
 #### Enhancements
 
 
-1. StayAwake executable is now digitally signed by the kind folks at [OSSign](https://ossign.org). Thank you!
+1. StayAwake executable is now digitally signed by the kind folks at [OSSign](https://www.ossign.org). Thanks to the code signing, there is *NO* need for users to override the Windows Defender Smartscreen or [unblock the executable file](https://stackoverflow.com/questions/48946680/how-to-avoid-the-windows-defender-smartscreen-prevented-an-unrecognized-app-fro) to launch StayAwake.
 
    <a title="OSSign - Code Signing for Open Source" href="https://www.ossign.org"><img style=" width:150px; height:128px;" src="images/OSSign.png"/></a>
 

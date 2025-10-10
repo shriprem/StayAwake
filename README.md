@@ -21,7 +21,7 @@ StayAwake can be minimized to the Windows System Tray, and will continue to run 
 
 StayAwake does its job by simulating key presses of unused or low side-effect buttons at specified time intervals. This is a safe and non-intrusive way to keep your Microsoft Teams status _Active_.
 
-StayAwake executable is now digitally signed by the kind folks at [OSSign](https://ossign.org). Thank you!
+StayAwake executable is now digitally signed by the kind folks at [OSSign](https://www.ossign.org). Thanks to the code signing, there is *NO* need for users to override the Windows Defender Smartscreen or [unblock the executable file](https://stackoverflow.com/questions/48946680/how-to-avoid-the-windows-defender-smartscreen-prevented-an-unrecognized-app-fro) to launch StayAwake.
 
 ## User Interface
 ![StayAwake UI](images/StayAwakeApp.png)
