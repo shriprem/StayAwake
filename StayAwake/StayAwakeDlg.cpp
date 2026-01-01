@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
    ON_CBN_SELCHANGE(IDC_STAYAWAKE_KEY_LIST, &CStayAwakeDlg::OnStayawakeKeyChange)
    ON_BN_CLICKED(IDC_STAYAWAKE_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResume)
+   ON_BN_CLICKED(IDC_START_MINIMIZED, &CStayAwakeDlg::OnStartMinimized)
 END_MESSAGE_MAP()
 
 
@@ -133,6 +134,10 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
       ShowPausedInfo(TRUE);
    else
       InitTimer();
+
+   BOOL bMinimized = (GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
+   CheckDlgButton(IDC_START_MINIMIZED, bMinimized ? BST_CHECKED : BST_UNCHECKED);
+   if (bMinimized) MinimizeToTray();
 
    return 0;
 }
@@ -386,4 +391,10 @@ void CStayAwakeDlg::ShowPausedInfo(bool both)
       SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, L"Last StayAwake event:         PAUSED");
 
    SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, L"Next StayAwake event:         PAUSED");
+}
+
+void CStayAwakeDlg::OnStartMinimized()
+{
+   WritePrivateProfileString(PREF_DEFAULTS, PREF_START_MINIMIZED,
+      (IsDlgButtonChecked(IDC_START_MINIMIZED) == BST_CHECKED) ? L"Y" : L"N", PREF_INI_FILE);
 }

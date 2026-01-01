@@ -15,6 +15,7 @@ constexpr auto PREF_INI_FILE = L".\\StayAwake.ini";
 constexpr auto PREF_DEFAULTS = L"Defaults";
 constexpr auto PREF_AWAKE_KEYCODE = L"AwakeKeyCode";
 constexpr auto PREF_AWAKE_PAUSED = L"AwakePaused";
+constexpr auto PREF_START_MINIMIZED = L"StartMinimized";
 constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
 
@@ -63,6 +64,7 @@ private:
    afx_msg void OnRestore();
    afx_msg void OnExit();
    afx_msg void OnDestroy();
+   afx_msg void OnStartMinimized();
 
    void InitTimer();
    void InitTrayIcon();

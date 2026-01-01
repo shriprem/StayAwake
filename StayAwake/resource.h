@@ -19,7 +19,8 @@
 #define IDC_STAYAWAKE_NEXT_EVENT        1007
 #define IDC_STAYAWAKE_PAUSE_RESUME_BTN  1008
 #define IDC_MINIMIZE                    1009
-#define IDC_ABOUT_BUTTON                1010
+#define IDC_START_MINIMIZED             1011
+#define IDC_ABOUT_BUTTON                1012
 #define IDC_ABOUT_NAME                  1021
 #define IDC_ABOUT_VERSION               1022
 #define IDC_ABOUT_BUILD_TIME            1023
@@ -29,7 +30,7 @@
 #define IDM_RESTORE                     32772
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
