@@ -58,12 +58,12 @@ private:
    afx_msg void OnStayawakeKeyChange();
    afx_msg void OnSetInterval();
    afx_msg void OnPauseResume();
-   afx_msg void OnMinimize();
+   afx_msg void OnMinimize() { MinimizeToTray(); };
    afx_msg void OnClickedAboutButton();
    afx_msg void OnEnter() { /* Ignore ENTER key press */ };
-   afx_msg void OnCancel();
-   afx_msg void OnRestore();
-   afx_msg void OnExit();
+   afx_msg void OnCancel() { MinimizeToTray(); };
+   afx_msg void OnRestore() { RestoreFromTray(); };
+   afx_msg void OnExit() { DestroyWindow(); };
    afx_msg void OnDestroy();
    afx_msg void OnStartMinimized();
 

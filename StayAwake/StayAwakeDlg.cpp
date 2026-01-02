@@ -252,30 +252,6 @@ void CStayAwakeDlg::RestoreFromTray()
 }
 
 
-void CStayAwakeDlg::OnMinimize()
-{
-   MinimizeToTray();
-}
-
-
-void CStayAwakeDlg::OnCancel()
-{
-   MinimizeToTray();
-}
-
-
-void CStayAwakeDlg::OnRestore()
-{
-   RestoreFromTray();
-}
-
-
-void CStayAwakeDlg::OnExit()
-{
-   DestroyWindow();
-}
-
-
 void CStayAwakeDlg::OnDestroy()
 {
    if (m_bMinimized) Shell_NotifyIcon(NIM_DELETE, &m_TrayData);
