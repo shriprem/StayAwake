@@ -1,5 +1,14 @@
 ## Version History
 
+### Version 1.2.1.0 [January 1, 2026]
+
+1. Added a checkbox option to have StayAwake automatically minimize to System Tray upon launch. See issue: [#8](https://github.com/shriprem/StayAwake/issues/8)
+2. Fixed: Pressing ENTER key was causing StayAwake application to exit. See issue: [#9](https://github.com/shriprem/StayAwake/issues/9)
+
+**Release:** [1.2.1.0 Release](https://github.com/shriprem/StayAwake/releases/tag/v1.2.1.0)
+
+---
+
 ### Version 1.2.0.0 [October 8, 2025]
 
 #### Enhancements

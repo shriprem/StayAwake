@@ -11,13 +11,13 @@
 <a title="OSSign - Code Signing for Open Source" href="https://www.ossign.org"><img style="width:100px; height:86px;" src="images/OSSign.png"/></a>
 
 
-[Current Version: 1.2.0.0](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
+[Current Version: 1.2.1.0](https://github.com/shriprem/StayAwake/blob/main/VersionHistory.md)
 
 StayAwake is a simple utility that enables you to maintain an _Active_ status on Microsoft Teams (and perhaps other messaging applications such as Slack and Zoom). StayAwake also prevents screen saver activation, screen blanking, and Windows session lockouts.
 
 If you are using Microsoft Teams, you may have noticed that Teams automatically sets your status to _Away_ after a certain period of inactivity. This can be frustrating if you are still at your desk but perhaps on a business phone call _OR_ outlining a plan on paper _OR_ consulting some reference material.
 
-StayAwake can be minimized to the Windows System Tray, and will continue to run in the background until you click the _Exit_ button.
+StayAwake can be minimized to the Windows System Tray, and will continue to run in the background until you click the _Exit_ button. StayAwake also has the option to automatically minimize to Windows System Tray upon launch. See: [Start Minimized](#start-minimized)
 
 StayAwake does its job by simulating key presses of unused or low side-effect buttons at specified time intervals. This is a safe and non-intrusive way to keep your Microsoft Teams status _Active_.
 
@@ -55,6 +55,11 @@ Click this button to minimize StayAwake to the Windows System Tray. See the [Sys
 
 #### Exit button
 Click this button to exit StayAwake.
+
+#### Start Minimized
+Check the _Launch application in minimized state_ box to have StayAwake automatically minimize to System Tray upon launch.
+
+When the _Start Minimized_ option is enabled, StayAwake will launch and minimize immediately only on the first launch attempt. If StayAwake is still running in a minimized state, trying to launch the application again will restore the StayAwake dialog from the minimized state. This is by design when `MultipleInstancesAllowed=N`. See under: [Configuration File Details](#configuration-file-details)
 
 
 ### Key Simulation Options
@@ -96,7 +101,7 @@ When you minimize StayAwake, it will be represented by the System Tray icon show
 
 
 ## Configuration File Details
-StayAwake saves its configuration in a file named `StayAwakeConfig.ini`. This file is co-located in the `StayAwake.exe` application file folder. These key-value pairs are stored in this file:
+StayAwake saves its configuration in a file named `StayAwake.ini`. This file is co-located in the `StayAwake.exe` application file folder. These key-value pairs are stored in this file:
 
 1. `AwakeKeyCode`: This key stores a numeric value between 0 and 11 to indicate the selection for the [StayAwake Key simulation](#stayawake-key-simulation-list) list.
 
@@ -106,7 +111,9 @@ StayAwake saves its configuration in a file named `StayAwakeConfig.ini`. This fi
 
 3. `AwakePaused`: This key stores a flag value (_Y_ or _N_) to indicate if StayAwake is in paused state.
 
-4. `MultipleInstancesAllowed`: This key stores a flag value (_Y_ or _N_) to indicate whether multiple instances of StayAwake are allowed to run simultaneously. The default value is _N_ (i.e., multiple instances are not allowed). Any value that is not _Y_ will be interpreted as _N_.
+4.  `StartMinimized`: This key stores a flag value (_Y_ or _N_) to indicate if StayAwake will automatically minimize to System Tray upon launch. See: [Start Minimized](#start-minimized)
+
+5. `MultipleInstancesAllowed`: This key stores a flag value (_Y_ or _N_) to indicate whether multiple instances of StayAwake are allowed to run simultaneously. The default value is _N_ (i.e., multiple instances are not allowed). Any value that is not _Y_ will be interpreted as _N_.
 
 
 ## Alternatives
