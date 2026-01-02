@@ -60,6 +60,7 @@ private:
    afx_msg void OnPauseResume();
    afx_msg void OnMinimize();
    afx_msg void OnClickedAboutButton();
+   afx_msg void OnEnter() { /* Ignore ENTER key press */ };
    afx_msg void OnCancel();
    afx_msg void OnRestore();
    afx_msg void OnExit();

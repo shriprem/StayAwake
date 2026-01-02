@@ -19,6 +19,7 @@
 #define IDC_STAYAWAKE_NEXT_EVENT        1007
 #define IDC_STAYAWAKE_PAUSE_RESUME_BTN  1008
 #define IDC_MINIMIZE                    1009
+#define IDC_EXIT                        1010
 #define IDC_START_MINIMIZED             1011
 #define IDC_ABOUT_BUTTON                1012
 #define IDC_ABOUT_NAME                  1021
