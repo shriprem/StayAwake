@@ -29,7 +29,7 @@ jobs:
 
     - name: MSBuild of application exe
       working-directory: StayAwake
-      run: msbuild StayAwake.vcxproj /m /p:configuration="${{ matrix.build_configuration }}" /p:platform="${{ matrix.build_platform }}" /p:PlatformToolset="v143"
+      run: msbuild StayAwake.vcxproj /m /p:configuration="${{ matrix.build_configuration }}" /p:platform="${{ matrix.build_platform }}"
 
     - name: Generate SHA256 hash for application_x64
       if: matrix.build_platform == 'x64' && matrix.build_configuration == 'Release'
