@@ -15,7 +15,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - name: Checkout repository
@@ -53,12 +53,14 @@ jobs:
     #   make bootstrap
     #   make release
 
-    - name: Add msbuild to PATH
+    - name: Add msbuild (Visual Studio 2022)
       uses: microsoft/setup-msbuild@v3
+      with:
+        vs-version: '17.0'
 
     - name: MSBuild of application
       working-directory: StayAwake
-      run: msbuild StayAwake.vcxproj /m /p:configuration="Release" /p:platform="x64" /p:PlatformToolset="v143"
+      run: msbuild StayAwake.vcxproj /m /p:configuration="Release" /p:platform="x64"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
