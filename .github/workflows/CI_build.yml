@@ -11,7 +11,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       max-parallel: 6
       matrix:
@@ -22,8 +22,10 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v6
 
-    - name: Add msbuild to PATH
+    - name: Add msbuild (Visual Studio 2022)
       uses: microsoft/setup-msbuild@v3
+      with:
+        vs-version: '17.0'
 
     - name: MSBuild of application exe
       working-directory: StayAwake
