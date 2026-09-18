@@ -31,6 +31,9 @@ BOOL CStayAwakeApp::InitInstance()
 	// Activate "Windows Native" visual manager for enabling themes in MFC controls
 	CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
+	// Initialize RNG
+	std::srand(static_cast<unsigned>(time({})));
+
 	CStayAwakeDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();

@@ -303,7 +303,8 @@ void CStayAwakeDlg::OnDestroy()
 
 void CStayAwakeDlg::SimulateAwakeKeyPress()
 {
-   switch (m_AwakeKeyCode) {
+   switch (m_AwakeKeyCode)
+   {
    case 1:
       keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
       keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
@@ -348,7 +349,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
 
    UINT nTimerSeconds{ m_IntervalMinSeconds };
    if (m_IntervalMinSeconds != m_IntervalMaxSeconds)
-      nTimerSeconds += rand() % abs(static_cast<int>(m_IntervalMaxSeconds - m_IntervalMinSeconds));
+      nTimerSeconds += rand() % (abs(static_cast<int>(m_IntervalMaxSeconds - m_IntervalMinSeconds)) + 1);
 
    m_TimerID = SetTimer(m_TimerID, nTimerSeconds * 1000, NULL);
 
@@ -364,7 +365,8 @@ void CStayAwakeDlg::OnSetInterval()
    OnKillfocusIntervalMin();
    OnKillfocusIntervalMax();
 
-   if (m_IntervalMinSeconds > m_IntervalMaxSeconds) {
+   if (m_IntervalMinSeconds > m_IntervalMaxSeconds)
+   {
       UINT nTemp{m_IntervalMinSeconds};
       m_IntervalMinSeconds = m_IntervalMaxSeconds;
       m_IntervalMaxSeconds = nTemp;
@@ -395,10 +397,12 @@ void CStayAwakeDlg::OnStayawakeKeyChange()
 
 void CStayAwakeDlg::OnPauseResume()
 {
-   if (IsTimerPaused()) {
+   if (IsTimerPaused())
+   {
       InitAwakes();
    }
-   else {
+   else
+   {
       KillTimer(m_TimerID);
 
       SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_RESUME);
