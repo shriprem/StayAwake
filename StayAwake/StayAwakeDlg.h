@@ -25,6 +25,11 @@ constexpr auto MIN_PERIOD{ 10 };
 constexpr auto DEF_PERIOD{ 240 };
 constexpr auto MAX_PERIOD{ 9990 };
 
+const wstring MIN_MAX_PERIOD = to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD);
+const wstring INTERVAL_TOOLTIP = L"Number between " + MIN_MAX_PERIOD;
+const wstring INTERVAL_WARNING = L"Please enter a value between " + MIN_MAX_PERIOD;
+const LPCWSTR INTERVAL_WARN_TITLE = L"Timer Interval in seconds";
+
 class CStayAwakeDlg : public CDialogEx
 {
 public:

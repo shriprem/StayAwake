@@ -93,11 +93,8 @@ BOOL CStayAwakeDlg::OnInitDialog()
    SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
    SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
 
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MIN, L"",
-      wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
-
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MAX, L"",
-      wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MIN, L"", INTERVAL_TOOLTIP, 3, TRUE);
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MAX, L"", INTERVAL_TOOLTIP, 3, TRUE);
 
    SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, IsTimerPaused() ? BTN_TEXT_RESUME : BTN_TEXT_PAUSE);
 
@@ -182,8 +179,7 @@ void CStayAwakeDlg::OnKillfocusIntervalMin()
 
    if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MIN)->m_hWnd, L"Timer Interval in seconds",
-         (wstring{ L"Please enter a value between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD)).c_str());
+      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MIN)->m_hWnd, INTERVAL_WARN_TITLE, INTERVAL_WARNING.c_str());
       SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
       return;
    }
@@ -200,8 +196,7 @@ void CStayAwakeDlg::OnKillfocusIntervalMax()
 
    if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MAX)->m_hWnd, L"Timer Interval in seconds",
-         (wstring{ L"Please enter a value between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD)).c_str());
+      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MAX)->m_hWnd, INTERVAL_WARN_TITLE, INTERVAL_WARNING.c_str());
       SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
       return;
    }
