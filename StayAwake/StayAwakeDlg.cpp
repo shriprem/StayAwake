@@ -36,7 +36,8 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_BN_CLICKED(IDC_MINIMIZE, &CStayAwakeDlg::OnMinimize)
    ON_BN_CLICKED(IDC_EXIT, &CStayAwakeDlg::OnExit)
    ON_BN_CLICKED(IDC_STAYAWAKE_SET_INTERVAL_BTN, &CStayAwakeDlg::OnSetInterval)
-   ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL, &CStayAwakeDlg::OnKillfocusInterval)
+   ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MIN, &CStayAwakeDlg::OnKillfocusIntervalMin)
+   ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MAX, &CStayAwakeDlg::OnKillfocusIntervalMax)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
    ON_CBN_SELCHANGE(IDC_STAYAWAKE_KEY_LIST, &CStayAwakeDlg::OnStayawakeKeyChange)
    ON_BN_CLICKED(IDC_STAYAWAKE_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResume)
@@ -83,18 +84,19 @@ BOOL CStayAwakeDlg::OnInitDialog()
       SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)(L"Unassigned Key #" + to_wstring(i)).c_str());
    }
 
-   m_AwakeKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, m_TimerSeconds, PREF_INI_FILE);
+   m_AwakeKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, m_AwakeKeyCode, PREF_INI_FILE);
    m_AwakeKeyCode %= 12;
 
    SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_SETCURSEL, m_AwakeKeyCode, NULL);
 
-   // Init Timer Seconds
-   m_TimerSeconds = GetPrivateProfileInt(PREF_DEFAULTS, PREF_TIMER_INTERVAL, m_TimerSeconds, PREF_INI_FILE);
-   if (m_TimerSeconds < MIN_PERIOD || m_TimerSeconds > MAX_PERIOD)
-      m_TimerSeconds = 240;
-   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL, m_TimerSeconds, FALSE);
+   InitIntervals();
+   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
+   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
 
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL, L"",
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MIN, L"",
+      wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
+
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MAX, L"",
       wstring{ L"Number between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD), 3, TRUE);
 
    SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, IsTimerPaused() ? BTN_TEXT_RESUME : BTN_TEXT_PAUSE);
@@ -135,7 +137,7 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
    if (IsTimerPaused())
       ShowPausedInfo(TRUE);
    else
-      InitTimer();
+      InitAwakes();
 
    BOOL bMinimized = (GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
    CheckDlgButton(IDC_START_MINIMIZED, bMinimized ? BST_CHECKED : BST_UNCHECKED);
@@ -172,21 +174,39 @@ afx_msg LRESULT CStayAwakeDlg::OnRestoreDialog(WPARAM wParam, LPARAM lParam)
 }
 
 
-void CStayAwakeDlg::OnKillfocusInterval()
+void CStayAwakeDlg::OnKillfocusIntervalMin()
 {
    int nInterval{};
 
-   nInterval = GetDlgItemInt(IDC_STAYAWAKE_INTERVAL, nullptr, FALSE);
+   nInterval = GetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, nullptr, FALSE);
 
    if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL)->m_hWnd, L"Timer Interval in seconds",
+      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MIN)->m_hWnd, L"Timer Interval in seconds",
          (wstring{ L"Please enter a value between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD)).c_str());
-      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL, m_TimerSeconds, FALSE);
+      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
       return;
    }
 
-   m_TimerSeconds = nInterval;
+   m_IntervalMinSeconds = nInterval;
+}
+
+
+void CStayAwakeDlg::OnKillfocusIntervalMax()
+{
+   int nInterval{};
+
+   nInterval = GetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, nullptr, FALSE);
+
+   if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
+   {
+      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MAX)->m_hWnd, L"Timer Interval in seconds",
+         (wstring{ L"Please enter a value between " } + to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD)).c_str());
+      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
+      return;
+   }
+
+   m_IntervalMaxSeconds = nInterval;
 }
 
 
@@ -197,10 +217,29 @@ void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CStayAwakeDlg::InitTimer()
+void CStayAwakeDlg::InitIntervals()
+{
+   int nIntervalLegacy{}, nIntervalMin{}, nIntervalMax{};
+
+   nIntervalLegacy = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_LEGACY, DEF_PERIOD, PREF_INI_FILE);
+   if (nIntervalLegacy < MIN_PERIOD || nIntervalLegacy > MAX_PERIOD)
+      nIntervalLegacy = DEF_PERIOD;
+
+   nIntervalMin = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_MINIMUM, nIntervalLegacy, PREF_INI_FILE);
+   if (nIntervalMin < MIN_PERIOD || nIntervalMin > MAX_PERIOD)
+      nIntervalMin = DEF_PERIOD;
+
+   nIntervalMax = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_MAXIMUM, nIntervalLegacy, PREF_INI_FILE);
+   if (nIntervalMax < MIN_PERIOD || nIntervalMax > MAX_PERIOD)
+      nIntervalMax = DEF_PERIOD;
+
+   m_IntervalMinSeconds = (nIntervalMin <= nIntervalMax) ? nIntervalMin : nIntervalMax;
+   m_IntervalMaxSeconds = (nIntervalMin >= nIntervalMax) ? nIntervalMin : nIntervalMax;
+}
+
+void CStayAwakeDlg::InitAwakes()
 {
    SimulateAwakeKeyPress();
-   m_TimerID = SetTimer(m_TimerID, m_TimerSeconds * 1000, NULL);
 
    SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
    WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_PAUSED, L"N", PREF_INI_FILE);
@@ -225,7 +264,8 @@ void CStayAwakeDlg::InitTrayIcon()
 void CStayAwakeDlg::MinimizeToTray()
 {
    if (m_bMinimized) return;
-   SendDlgItemMessage(IDC_STAYAWAKE_INTERVAL, EM_HIDEBALLOONTIP, 0, 0);
+   SendDlgItemMessage(IDC_STAYAWAKE_INTERVAL_MIN, EM_HIDEBALLOONTIP, 0, 0);
+   SendDlgItemMessage(IDC_STAYAWAKE_INTERVAL_MAX, EM_HIDEBALLOONTIP, 0, 0);
 
    if (!Shell_NotifyIcon(NIM_ADD, &m_TrayData))
       MessageBox(L"Unable to Display Tray Icon", L"Error!");
@@ -306,18 +346,37 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    GetLocalTime(&lastTime);
    SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
 
+   UINT nTimerSeconds{ m_IntervalMinSeconds };
+   if (m_IntervalMinSeconds != m_IntervalMaxSeconds)
+      nTimerSeconds += rand() % abs(static_cast<int>(m_IntervalMaxSeconds - m_IntervalMinSeconds));
+
+   m_TimerID = SetTimer(m_TimerID, nTimerSeconds * 1000, NULL);
+
    SYSTEMTIME nextTime{};
    GetSystemTime(&nextTime);
-   Utils::addSecondsToTime(nextTime, m_TimerSeconds);
+   Utils::addSecondsToTime(nextTime, nTimerSeconds);
    SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
 }
 
 
 void CStayAwakeDlg::OnSetInterval()
 {
-   OnKillfocusInterval();
-   WritePrivateProfileString(PREF_DEFAULTS, PREF_TIMER_INTERVAL, to_wstring(m_TimerSeconds).c_str(), PREF_INI_FILE);
-   InitTimer();
+   OnKillfocusIntervalMin();
+   OnKillfocusIntervalMax();
+
+   if (m_IntervalMinSeconds > m_IntervalMaxSeconds) {
+      UINT nTemp{m_IntervalMinSeconds};
+      m_IntervalMinSeconds = m_IntervalMaxSeconds;
+      m_IntervalMaxSeconds = nTemp;
+
+      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
+      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
+   }
+
+   WritePrivateProfileString(PREF_DEFAULTS, PREF_INTERVAL_MINIMUM, to_wstring(m_IntervalMinSeconds).c_str(), PREF_INI_FILE);
+   WritePrivateProfileString(PREF_DEFAULTS, PREF_INTERVAL_MAXIMUM, to_wstring(m_IntervalMaxSeconds).c_str(), PREF_INI_FILE);
+
+   InitAwakes();
 }
 
 
@@ -337,7 +396,7 @@ void CStayAwakeDlg::OnStayawakeKeyChange()
 void CStayAwakeDlg::OnPauseResume()
 {
    if (IsTimerPaused()) {
-      InitTimer();
+      InitAwakes();
    }
    else {
       KillTimer(m_TimerID);

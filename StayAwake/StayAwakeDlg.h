@@ -17,9 +17,12 @@ constexpr auto PREF_AWAKE_KEYCODE = L"AwakeKeyCode";
 constexpr auto PREF_AWAKE_PAUSED = L"AwakePaused";
 constexpr auto PREF_START_MINIMIZED = L"StartMinimized";
 constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
-constexpr auto PREF_TIMER_INTERVAL = L"TimerIntervalInSeconds";
+constexpr auto PREF_INTERVAL_LEGACY = L"TimerIntervalInSeconds";
+constexpr auto PREF_INTERVAL_MINIMUM = L"MinimumIntervalInSeconds";
+constexpr auto PREF_INTERVAL_MAXIMUM = L"MaximumIntervalInSeconds";
 
 constexpr auto MIN_PERIOD{ 10 };
+constexpr auto DEF_PERIOD{ 240 };
 constexpr auto MAX_PERIOD{ 9990 };
 
 class CStayAwakeDlg : public CDialogEx
@@ -46,7 +49,8 @@ private:
    bool m_bMinimized{};
    UINT_PTR m_TimerID{42};
    UINT m_AwakeKeyCode{ 0 };
-   UINT m_TimerSeconds{ 240 };
+   UINT m_IntervalMinSeconds{};
+   UINT m_IntervalMaxSeconds{};
    NOTIFYICONDATA m_TrayData{};
    CMenu m_menu;
 
@@ -54,7 +58,8 @@ private:
    afx_msg LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);
    afx_msg LRESULT OnRestoreDialog(WPARAM wParam, LPARAM lParam);
    afx_msg void OnTimer(UINT_PTR nIDEvent);
-   afx_msg void OnKillfocusInterval();
+   afx_msg void OnKillfocusIntervalMin();
+   afx_msg void OnKillfocusIntervalMax();
    afx_msg void OnStayawakeKeyChange();
    afx_msg void OnSetInterval();
    afx_msg void OnPauseResume();
@@ -67,7 +72,8 @@ private:
    afx_msg void OnDestroy();
    afx_msg void OnStartMinimized();
 
-   void InitTimer();
+   void InitIntervals();
+   void InitAwakes();
    void InitTrayIcon();
    void MinimizeToTray();
    void OnTrayButtonDown(CPoint pt);
