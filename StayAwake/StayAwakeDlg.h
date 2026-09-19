@@ -11,7 +11,7 @@ constexpr auto VK_UNASSIGNED_10 = 0xE8;
 
 constexpr auto BTN_TEXT_PAUSE = L"&Pause";
 constexpr auto BTN_TEXT_RESUME = L"&Resume";
-constexpr auto PREF_INI_FILE = L".\\StayAwake.ini";
+constexpr auto PREF_INI_FILE = L"StayAwake.ini";
 constexpr auto PREF_DEFAULTS = L"Defaults";
 constexpr auto PREF_LEGACY_KEYCODE = L"AwakeKeyCode";
 constexpr auto PREF_SELECTED_KEYCODES = L"SelectedKeyCodes";
@@ -48,9 +48,9 @@ protected:
 
 
 public:
-   static wstring GetSelectedKeyCodes();
-   static bool CheckSelectedKeyCodes(wstring sKeyCodes);
-   static void SaveSelectedKeyCodes(wstring sKeyCodes);
+   wstring GetSelectedKeyCodes();
+   bool CheckSelectedKeyCodes(wstring sKeyCodes);
+   bool SaveSelectedKeyCodes(wstring sKeyCodes);
 
 protected:
    HICON m_hIcon;
@@ -60,6 +60,7 @@ protected:
    DECLARE_MESSAGE_MAP()
 
 private:
+   wchar_t m_IniFilePath[MAX_PATH]{};
    bool m_bMinimized{};
    UINT_PTR m_TimerID{42};
 
@@ -90,6 +91,7 @@ private:
    afx_msg void OnDestroy();
    afx_msg void OnStartMinimized();
 
+   void InitConfigFilePath();
    void InitIntervals();
    void InitRoster();
    void InitAwakes();
