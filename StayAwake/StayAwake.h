@@ -6,7 +6,8 @@
 
 #include "resource.h"
 
-#define LAST_CODE_UPDATE_TIME "Sep 19 2026 - 13:33:42"
+constexpr auto LAST_CODE_UPDATE_TIME = "Sep 19 2026 - 17:20:42";
+
 
 class CStayAwakeApp : public CWinApp
 {

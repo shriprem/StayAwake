@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Utils.h"
+#include "StayAwakeDlg.h"
 
 class CSelectKeyCodesDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CSelectKeyCodesDlg)
 
 public:
-	CSelectKeyCodesDlg(CWnd* pParent = nullptr);   // standard constructor
+	explicit CSelectKeyCodesDlg(CStayAwakeDlg* pCaller);
 	virtual ~CSelectKeyCodesDlg();
 
 // Dialog Data
@@ -16,6 +17,7 @@ public:
 #endif
 
 protected:
+	CStayAwakeDlg* m_pCaller;
 	HICON m_hIcon;
 
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

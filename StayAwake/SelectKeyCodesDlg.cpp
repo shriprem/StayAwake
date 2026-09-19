@@ -5,15 +5,16 @@
 #include "StayAwake.h"
 #include "afxdialogex.h"
 #include "SelectKeyCodesDlg.h"
-#include "StayAwakeDlg.h"
 
+static_assert(IDC_KEY_UNASSIGNED_10 - IDC_KEY_SCROLL_LOCK + 1 == LEN_KEYCODES_ROSTER, "Roster checkbox IDs must be consecutive");
 
 // CSelectKeyCodesDlg dialog
 
 IMPLEMENT_DYNAMIC(CSelectKeyCodesDlg, CDialogEx)
 
-CSelectKeyCodesDlg::CSelectKeyCodesDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_SELECT_KEYCODES_DIALOG, pParent)
+CSelectKeyCodesDlg::CSelectKeyCodesDlg(CStayAwakeDlg* pCaller)
+	: CDialogEx(IDD_SELECT_KEYCODES_DIALOG, pCaller)
+	, m_pCaller(pCaller)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -42,7 +43,7 @@ BOOL CSelectKeyCodesDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	CheckAllBoxes(CStayAwakeDlg::GetSelectedKeyCodes());
+	CheckAllBoxes(m_pCaller->GetSelectedKeyCodes());
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -56,11 +57,15 @@ void CSelectKeyCodesDlg::OnOK()
 
 	if (sSelectedKeyCodes == wstring(LEN_KEYCODES_ROSTER, L'0'))
 	{
-		MessageBox(L"Please select at least one Key Simulation", L"Select multiple Key Codes", MB_ICONERROR);
+		MessageBox(L"Please select at least one Key Code", L"Select multiple Key Codes", MB_ICONEXCLAMATION);
 		return;
 	}
 
-	CStayAwakeDlg::SaveSelectedKeyCodes(sSelectedKeyCodes);
+	if (!m_pCaller->SaveSelectedKeyCodes(sSelectedKeyCodes))
+	{
+		MessageBox(L"Unable to save to the StayAwake.ini file.", L"Select multiple Key Codes", MB_ICONEXCLAMATION);
+		return;
+	}
 
 	CDialogEx::OnOK();
 }

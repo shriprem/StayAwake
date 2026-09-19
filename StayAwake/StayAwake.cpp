@@ -36,7 +36,7 @@ BOOL CStayAwakeApp::InitInstance()
 
 	CStayAwakeDlg dlg;
 	m_pMainWnd = &dlg;
-	INT_PTR nResponse = dlg.DoModal();
+	dlg.DoModal();
 
 #if !defined(_AFXDLL) && !defined(_AFX_NO_MFC_CONTROLS_IN_DIALOGS)
 	ControlBarCleanUp();
