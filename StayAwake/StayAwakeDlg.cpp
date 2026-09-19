@@ -7,9 +7,6 @@
 #include "afxdialogex.h"
 #include "Utils.h"
 
-#include <regex>
-#include <vector>
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -28,15 +25,27 @@ void CStayAwakeDlg::DoDataExchange(CDataExchange* pDX)
 
 wstring CStayAwakeDlg::GetSelectedKeyCodes()
 {
-   const int bufSize{ LEN_SELECTED_KEYCODES + 1 };
-   wstring sBuf(bufSize, '\0');
+   const int bufSize{ LEN_KEYCODES_ROSTER + 1 };
+   wchar_t sBuf[bufSize]{};
 
-   GetPrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, DEF_SELECTED_KEYCODES, sBuf.data(), bufSize, PREF_INI_FILE);
+   GetPrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, L"N/A", sBuf, bufSize, PREF_INI_FILE);
 
-   // Remove \0s from buffer string
-   wstring sKeyCodes{ sBuf.c_str() };
+   wstring sKeyCodes{ sBuf };
 
-   if (!CheckSelectedKeyCodes(sKeyCodes))
+   if (sKeyCodes == L"N/A") {
+      UINT nLegacyKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_LEGACY_KEYCODE, 99, PREF_INI_FILE);
+
+      if (nLegacyKeyCode == 99)
+         sKeyCodes = DEF_SELECTED_KEYCODES;
+      else
+      {
+         sKeyCodes = wstring(LEN_KEYCODES_ROSTER, L'0');
+         sKeyCodes.replace(nLegacyKeyCode % 12, 1, L"1");
+      }
+
+      SaveSelectedKeyCodes(sKeyCodes);
+   }
+   else if (!CheckSelectedKeyCodes(sKeyCodes))
    {
       sKeyCodes = DEF_SELECTED_KEYCODES;
       SaveSelectedKeyCodes(sKeyCodes);
@@ -45,18 +54,17 @@ wstring CStayAwakeDlg::GetSelectedKeyCodes()
    return sKeyCodes;
 }
 
-BOOL CStayAwakeDlg::CheckSelectedKeyCodes(wstring sKeyCodes)
+bool CStayAwakeDlg::CheckSelectedKeyCodes(wstring sKeyCodes)
 {
-   return (sKeyCodes.length() == LEN_SELECTED_KEYCODES &&
-      sKeyCodes != L"000000000000" &&
-      regex_match(sKeyCodes, std::wregex(L"(0|1){12}")));
+   return (sKeyCodes.length() == LEN_KEYCODES_ROSTER &&
+      sKeyCodes != wstring(LEN_KEYCODES_ROSTER, L'0') &&
+      sKeyCodes.find_first_not_of(L"01") == std::string::npos);
 }
 
-BOOL CStayAwakeDlg::SaveSelectedKeyCodes(wstring sKeyCodes)
+void CStayAwakeDlg::SaveSelectedKeyCodes(wstring sKeyCodes)
 {
-   if (!CheckSelectedKeyCodes(sKeyCodes)) return FALSE;
-
-   return WritePrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, sKeyCodes.c_str(), PREF_INI_FILE);
+   if (CheckSelectedKeyCodes(sKeyCodes))
+      WritePrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, sKeyCodes.c_str(), PREF_INI_FILE);
 }
 
 BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
@@ -72,7 +80,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_TIMER()
    ON_BN_CLICKED(IDC_MINIMIZE, &CStayAwakeDlg::OnMinimize)
    ON_BN_CLICKED(IDC_EXIT, &CStayAwakeDlg::OnExit)
-   ON_BN_CLICKED(IDC_STAYAWAKE_KEY_SELECT_BTN, &CStayAwakeDlg::OnClickedStayawakeKeySelectBtn)
+   ON_BN_CLICKED(IDC_STAYAWAKE_KEYS_ROSTER_BTN, &CStayAwakeDlg::OnSetupKeyCodesRosterClicked)
    ON_BN_CLICKED(IDC_STAYAWAKE_SET_INTERVAL_BTN, &CStayAwakeDlg::OnSetInterval)
    ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MIN, &CStayAwakeDlg::OnKillfocusIntervalMin)
    ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MAX, &CStayAwakeDlg::OnKillfocusIntervalMax)
@@ -229,11 +237,15 @@ void CStayAwakeDlg::OnKillfocusIntervalMax()
 }
 
 
-void CStayAwakeDlg::OnClickedStayawakeKeySelectBtn()
+void CStayAwakeDlg::OnSetupKeyCodesRosterClicked()
 {
    CSelectKeyCodesDlg dlgSelectKeyCodes;
-   dlgSelectKeyCodes.DoModal();
-   SimulateAwakeKeyPress();
+
+   if (dlgSelectKeyCodes.DoModal() == IDOK)
+   {
+      InitRoster();
+      SimulateAwakeKeyPress();
+   }
 }
 
 void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
@@ -263,8 +275,22 @@ void CStayAwakeDlg::InitIntervals()
    m_IntervalMaxSeconds = (nIntervalMin >= nIntervalMax) ? nIntervalMin : nIntervalMax;
 }
 
+void CStayAwakeDlg::InitRoster()
+{
+   wstring sSelectedKeyCodes{ GetSelectedKeyCodes() };
+
+   m_RosterLength = 0;
+
+   for (int i{}; i < LEN_KEYCODES_ROSTER; i++)
+   {
+      if (sSelectedKeyCodes.at(i) == L'1')
+         m_RosterKeyCodes[m_RosterLength++] = i;
+   }
+}
+
 void CStayAwakeDlg::InitAwakes()
 {
+   InitRoster();
    SimulateAwakeKeyPress();
 
    SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
@@ -329,20 +355,9 @@ void CStayAwakeDlg::OnDestroy()
 
 void CStayAwakeDlg::SimulateAwakeKeyPress()
 {
-   wstring sSelectedKeyCodes{ GetSelectedKeyCodes() };
+   if (!m_RosterLength) return;
 
-   std::vector<UINT> vKeys{};
-   vKeys.resize(LEN_SELECTED_KEYCODES);
-
-   int nIndex{};
-
-   for (int i{}; i < LEN_SELECTED_KEYCODES; i++)
-   {
-      if (sSelectedKeyCodes.substr(i, 1) == L"1")
-         vKeys[nIndex++] = i;
-   }
-
-   UINT nAwakeKeyCode{ vKeys[rand() % nIndex] };
+   UINT nAwakeKeyCode{ m_RosterKeyCodes[rand() % m_RosterLength] };
    wstring sAwakeKeyCode{};
 
    switch (nAwakeKeyCode)
@@ -392,6 +407,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
    SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_LAST_KEYCODE, (L"[" + sAwakeKeyCode + L"]").c_str());
 
    UINT nTimerSeconds{ m_IntervalMinSeconds };
    if (m_IntervalMinSeconds != m_IntervalMaxSeconds)
@@ -403,7 +419,6 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    GetSystemTime(&nextTime);
    Utils::addSecondsToTime(nextTime, nTimerSeconds);
    SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
-   SetDlgItemText(IDC_STAYAWAKE_NEXT_KEYCODE, (L"[" + sAwakeKeyCode + L"]").c_str());
 }
 
 
@@ -425,7 +440,8 @@ void CStayAwakeDlg::OnSetInterval()
    WritePrivateProfileString(PREF_DEFAULTS, PREF_INTERVAL_MINIMUM, to_wstring(m_IntervalMinSeconds).c_str(), PREF_INI_FILE);
    WritePrivateProfileString(PREF_DEFAULTS, PREF_INTERVAL_MAXIMUM, to_wstring(m_IntervalMaxSeconds).c_str(), PREF_INI_FILE);
 
-   InitAwakes();
+   InitRoster();
+   SimulateAwakeKeyPress();
 }
 
 
