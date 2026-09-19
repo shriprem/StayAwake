@@ -12,19 +12,18 @@
 #define IDR_MAINFRAME                   133
 #define IDB_ABOUT_BITMAP                134
 
-#define IDC_STAYAWAKE_KEY_LABEL         1001
-#define IDC_STAYAWAKE_KEY_SELECT_BTN    1002
-#define IDC_STAYAWAKE_INTERVAL_MIN      1011
-#define IDC_STAYAWAKE_INTERVAL_MAX      1012
-#define IDC_STAYAWAKE_SET_INTERVAL_BTN  1013
-#define IDC_STAYAWAKE_LAST_EVENT        1014
-#define IDC_STAYAWAKE_NEXT_EVENT        1015
-#define IDC_STAYAWAKE_NEXT_KEYCODE      1016
-#define IDC_STAYAWAKE_PAUSE_RESUME_BTN  1021
-#define IDC_MINIMIZE                    1022
-#define IDC_EXIT                        1023
-#define IDC_START_MINIMIZED             1024
-#define IDC_ABOUT_BUTTON                1025
+#define IDC_STAYAWAKE_KEYS_ROSTER_BTN   1001
+#define IDC_STAYAWAKE_INTERVAL_MIN      1002
+#define IDC_STAYAWAKE_INTERVAL_MAX      1003
+#define IDC_STAYAWAKE_SET_INTERVAL_BTN  1004
+#define IDC_STAYAWAKE_LAST_EVENT        1005
+#define IDC_STAYAWAKE_NEXT_EVENT        1006
+#define IDC_STAYAWAKE_LAST_KEYCODE      1007
+#define IDC_STAYAWAKE_PAUSE_RESUME_BTN  1011
+#define IDC_MINIMIZE                    1012
+#define IDC_EXIT                        1013
+#define IDC_START_MINIMIZED             1014
+#define IDC_ABOUT_BUTTON                1015
 
 #define IDC_KEY_SCROLL_LOCK             1051
 #define IDC_KEY_VOLUME_UP_DOWN          1052
@@ -52,7 +51,7 @@
 #define IDM_RESTORE                     32772
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135

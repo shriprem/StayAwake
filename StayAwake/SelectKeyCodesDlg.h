@@ -23,7 +23,7 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClickedKeySelectAllBtn();
 	afx_msg void OnClickedKeySelectNoneBtn();
-	afx_msg void OnBnClickedApply();
+	afx_msg void OnOK();
 
 	DECLARE_MESSAGE_MAP()
 
