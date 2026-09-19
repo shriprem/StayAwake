@@ -2,9 +2,13 @@
 #include "framework.h"
 #include "StayAwake.h"
 #include "StayAwakeDlg.h"
+#include "SelectKeyCodesDlg.h"
 #include "StayAwakeAboutDlg.h"
 #include "afxdialogex.h"
 #include "Utils.h"
+
+#include <regex>
+#include <vector>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +26,39 @@ void CStayAwakeDlg::DoDataExchange(CDataExchange* pDX)
    CDialogEx::DoDataExchange(pDX);
 }
 
+wstring CStayAwakeDlg::GetSelectedKeyCodes()
+{
+   const int bufSize{ LEN_SELECTED_KEYCODES + 1 };
+   wstring sBuf(bufSize, '\0');
+
+   GetPrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, DEF_SELECTED_KEYCODES, sBuf.data(), bufSize, PREF_INI_FILE);
+
+   // Remove \0s from buffer string
+   wstring sKeyCodes{ sBuf.c_str() };
+
+   if (!CheckSelectedKeyCodes(sKeyCodes))
+   {
+      sKeyCodes = DEF_SELECTED_KEYCODES;
+      SaveSelectedKeyCodes(sKeyCodes);
+   }
+
+   return sKeyCodes;
+}
+
+BOOL CStayAwakeDlg::CheckSelectedKeyCodes(wstring sKeyCodes)
+{
+   return (sKeyCodes.length() == LEN_SELECTED_KEYCODES &&
+      sKeyCodes != L"000000000000" &&
+      regex_match(sKeyCodes, std::wregex(L"(0|1){12}")));
+}
+
+BOOL CStayAwakeDlg::SaveSelectedKeyCodes(wstring sKeyCodes)
+{
+   if (!CheckSelectedKeyCodes(sKeyCodes)) return FALSE;
+
+   return WritePrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, sKeyCodes.c_str(), PREF_INI_FILE);
+}
+
 BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_SYSCOMMAND()
    ON_MESSAGE(WM_POST_OPEN, &CStayAwakeDlg::OnPostOpen)
@@ -35,11 +72,11 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_TIMER()
    ON_BN_CLICKED(IDC_MINIMIZE, &CStayAwakeDlg::OnMinimize)
    ON_BN_CLICKED(IDC_EXIT, &CStayAwakeDlg::OnExit)
+   ON_BN_CLICKED(IDC_STAYAWAKE_KEY_SELECT_BTN, &CStayAwakeDlg::OnClickedStayawakeKeySelectBtn)
    ON_BN_CLICKED(IDC_STAYAWAKE_SET_INTERVAL_BTN, &CStayAwakeDlg::OnSetInterval)
    ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MIN, &CStayAwakeDlg::OnKillfocusIntervalMin)
    ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MAX, &CStayAwakeDlg::OnKillfocusIntervalMax)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
-   ON_CBN_SELCHANGE(IDC_STAYAWAKE_KEY_LIST, &CStayAwakeDlg::OnStayawakeKeyChange)
    ON_BN_CLICKED(IDC_STAYAWAKE_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResume)
    ON_BN_CLICKED(IDC_START_MINIMIZED, &CStayAwakeDlg::OnStartMinimized)
 END_MESSAGE_MAP()
@@ -75,19 +112,6 @@ BOOL CStayAwakeDlg::OnInitDialog()
    //  when the application's main window is not a dialog
    SetIcon(m_hIcon, TRUE);			// Set big icon
    SetIcon(m_hIcon, FALSE);		// Set small icon
-
-   // Init KeyCodes List
-   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Scroll Lock cycling");
-   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)L"Volume Down & Up");
-
-   for (int i{ 1 }; i <= 10; i++) {
-      SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_ADDSTRING, NULL, (LPARAM)(L"Unassigned Key #" + to_wstring(i)).c_str());
-   }
-
-   m_AwakeKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, m_AwakeKeyCode, PREF_INI_FILE);
-   m_AwakeKeyCode %= 12;
-
-   SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_SETCURSEL, m_AwakeKeyCode, NULL);
 
    InitIntervals();
    SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
@@ -205,6 +229,13 @@ void CStayAwakeDlg::OnKillfocusIntervalMax()
 }
 
 
+void CStayAwakeDlg::OnClickedStayawakeKeySelectBtn()
+{
+   CSelectKeyCodesDlg dlgSelectKeyCodes;
+   dlgSelectKeyCodes.DoModal();
+   SimulateAwakeKeyPress();
+}
+
 void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
 {
    SimulateAwakeKeyPress();
@@ -298,9 +329,26 @@ void CStayAwakeDlg::OnDestroy()
 
 void CStayAwakeDlg::SimulateAwakeKeyPress()
 {
-   switch (m_AwakeKeyCode)
+   wstring sSelectedKeyCodes{ GetSelectedKeyCodes() };
+
+   std::vector<UINT> vKeys{};
+   vKeys.resize(LEN_SELECTED_KEYCODES);
+
+   int nIndex{};
+
+   for (int i{}; i < LEN_SELECTED_KEYCODES; i++)
+   {
+      if (sSelectedKeyCodes.substr(i, 1) == L"1")
+         vKeys[nIndex++] = i;
+   }
+
+   UINT nAwakeKeyCode{ vKeys[rand() % nIndex] };
+   wstring sAwakeKeyCode{};
+
+   switch (nAwakeKeyCode)
    {
    case 1:
+      sAwakeKeyCode = L"Volume Down && Up";
       keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
       keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
       Sleep(10);
@@ -318,18 +366,21 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    case 9:
    case 10:
    {
-      BYTE keycode{ static_cast<BYTE>(VK_UNASSIGNED_01 + m_AwakeKeyCode - 2) };
+      sAwakeKeyCode = L"Unassigned Key #" + to_wstring(nAwakeKeyCode - 1);
+      BYTE keycode{ static_cast<BYTE>(VK_UNASSIGNED_01 + nAwakeKeyCode - 2) };
       keybd_event(keycode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
       keybd_event(keycode, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
       break;
    }
 
    case 11:
+      sAwakeKeyCode = L"Unassigned Key #10";
       keybd_event(VK_UNASSIGNED_10, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
       keybd_event(VK_UNASSIGNED_10, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
       break;
 
    default:
+      sAwakeKeyCode = L"Scroll Lock cycling";
       keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
       keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
       Sleep(10);
@@ -352,6 +403,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    GetSystemTime(&nextTime);
    Utils::addSecondsToTime(nextTime, nTimerSeconds);
    SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
+   SetDlgItemText(IDC_STAYAWAKE_NEXT_KEYCODE, (L"[" + sAwakeKeyCode + L"]").c_str());
 }
 
 
@@ -381,13 +433,6 @@ void CStayAwakeDlg::OnClickedAboutButton()
 {
    CAboutDlg dlgAbout;
    dlgAbout.DoModal();
-}
-
-void CStayAwakeDlg::OnStayawakeKeyChange()
-{
-   m_AwakeKeyCode = static_cast<int>(SendDlgItemMessage(IDC_STAYAWAKE_KEY_LIST, CB_GETCURSEL, 0, 0));
-   m_AwakeKeyCode %= 12;
-   WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_KEYCODE, to_wstring(m_AwakeKeyCode).c_str(), PREF_INI_FILE);
 }
 
 void CStayAwakeDlg::OnPauseResume()

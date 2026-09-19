@@ -211,6 +211,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="SelectKeyCodesDlg.h" />
     <ClInclude Include="StayAwake.h" />
     <ClInclude Include="StayAwakeAboutDlg.h" />
     <ClInclude Include="StayAwakeDlg.h" />
@@ -220,6 +221,7 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SelectKeyCodesDlg.cpp" />
     <ClCompile Include="StayAwake.cpp" />
     <ClCompile Include="StayAwakeAboutDlg.cpp" />
     <ClCompile Include="StayAwakeDlg.cpp" />
@@ -238,9 +240,7 @@
     <None Include="res\StayAwake.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
     <Image Include="res\about.bmp" />
-    <Image Include="res\alarm-clock.ico" />
     <Image Include="res\StayAwake.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

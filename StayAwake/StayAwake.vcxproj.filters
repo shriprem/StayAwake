@@ -39,6 +39,9 @@
     <ClInclude Include="StayAwakeAboutDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SelectKeyCodesDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StayAwake.cpp">
@@ -56,6 +59,9 @@
     <ClCompile Include="StayAwakeAboutDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SelectKeyCodesDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StayAwake.rc">
@@ -69,12 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\StayAwake.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\alarm-clock.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\about.bmp">
