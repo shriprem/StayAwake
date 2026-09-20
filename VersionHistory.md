@@ -1,5 +1,22 @@
 ## Version History
 
+### Version 1.3.0.0 [September, 2026]
+
+1. StayAwake will use a random pick from a roster of user-specified key codes for each Awake event. See enhancement request: [#15](https://github.com/shriprem/StayAwake/issues/15).
+
+2. StayAwake will use random interval between minimum & maximum seconds for each Awake event. See enhancement request: [#15](https://github.com/shriprem/StayAwake/issues/15).
+
+3. StayAwake will use `StayAwake.ini` configuration file located in the same directory as the `StayAwake.exe` executable file regardless of how the application is invoked. Resolves issue: [#10](https://github.com/shriprem/StayAwake/issues/10).
+
+#### Notes for users upgrading from previous versions of StayAwake
+1. The user's choice for Key Simulation in the previous versions will be used as the only enabled key code in this new version. Users will need to use the [Select multiple Key Codes](#select-multiple-key-codes) popup to specify multiple key codes to enable Awakes with random key simulations.
+
+2. The user-specified value for the *Seconds between Awakes* field in the previous versions will be used to fill both *Minimum Awake Seconds* and *Maximum Awake Seconds* fields in this new version. Users will need to specify a different value for these two new fields to enable a random interval between Awake events.
+
+**Release:** [1.3.0.0 Release](https://github.com/shriprem/StayAwake/releases/tag/v1.3.0.0)
+
+---
+
 ### Version 1.2.1.0 [January 1, 2026]
 
 1. Added a checkbox option to have StayAwake automatically minimize to System Tray upon launch. See issue: [#8](https://github.com/shriprem/StayAwake/issues/8)
