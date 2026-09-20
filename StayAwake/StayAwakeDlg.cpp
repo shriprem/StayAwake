@@ -28,7 +28,7 @@ void CStayAwakeDlg::DoDataExchange(CDataExchange* pDX)
 
 wstring CStayAwakeDlg::GetSelectedKeyCodes()
 {
-   const int bufSize{ LEN_KEYCODES_ROSTER + 1 };
+   const int bufSize{ LEN_ROSTER_KEYCODES + 1 };
    wchar_t sBuf[bufSize]{};
 
    GetPrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, L"N/A", sBuf, bufSize, m_IniFilePath);
@@ -42,8 +42,8 @@ wstring CStayAwakeDlg::GetSelectedKeyCodes()
          sKeyCodes = DEF_SELECTED_KEYCODES;
       else
       {
-         sKeyCodes = wstring(LEN_KEYCODES_ROSTER, L'0');
-         sKeyCodes.replace(nLegacyKeyCode % LEN_KEYCODES_ROSTER, 1, L"1");
+         sKeyCodes = wstring(LEN_ROSTER_KEYCODES, L'0');
+         sKeyCodes.replace(nLegacyKeyCode % LEN_ROSTER_KEYCODES, 1, L"1");
       }
 
       WritePrivateProfileString(PREF_DEFAULTS, PREF_LEGACY_KEYCODE, nullptr, m_IniFilePath);
@@ -60,8 +60,8 @@ wstring CStayAwakeDlg::GetSelectedKeyCodes()
 
 bool CStayAwakeDlg::CheckSelectedKeyCodes(wstring sKeyCodes)
 {
-   return (sKeyCodes.length() == LEN_KEYCODES_ROSTER &&
-      sKeyCodes != wstring(LEN_KEYCODES_ROSTER, L'0') &&
+   return (sKeyCodes.length() == LEN_ROSTER_KEYCODES &&
+      sKeyCodes != wstring(LEN_ROSTER_KEYCODES, L'0') &&
       sKeyCodes.find_first_not_of(L"01") == std::string::npos);
 }
 
@@ -248,7 +248,7 @@ void CStayAwakeDlg::OnSetupKeyCodesRosterClicked()
 
    if (dlgSelectKeyCodes.DoModal() == IDOK)
    {
-      InitRoster();
+      InitRosterKeyCodes();
       if (!IsTimerPaused()) SimulateAwakeKeyPress();
    }
 }
@@ -294,13 +294,13 @@ void CStayAwakeDlg::InitIntervals()
    m_IntervalMaxSeconds = (nIntervalMin >= nIntervalMax) ? nIntervalMin : nIntervalMax;
 }
 
-void CStayAwakeDlg::InitRoster()
+void CStayAwakeDlg::InitRosterKeyCodes()
 {
    wstring sSelectedKeyCodes{ GetSelectedKeyCodes() };
 
    m_RosterLength = 0;
 
-   for (int i{}; i < LEN_KEYCODES_ROSTER; i++)
+   for (int i{}; i < LEN_ROSTER_KEYCODES; i++)
    {
       if (sSelectedKeyCodes.at(i) == L'1')
          m_RosterKeyCodes[m_RosterLength++] = i;
@@ -309,7 +309,7 @@ void CStayAwakeDlg::InitRoster()
 
 void CStayAwakeDlg::InitAwakes()
 {
-   InitRoster();
+   InitRosterKeyCodes();
    SimulateAwakeKeyPress();
 
    SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
@@ -374,7 +374,7 @@ void CStayAwakeDlg::OnDestroy()
 
 void CStayAwakeDlg::SimulateAwakeKeyPress()
 {
-   if (!m_RosterLength) InitRoster();
+   if (!m_RosterLength) InitRosterKeyCodes();
 
    UINT nAwakeKeyCode{ m_RosterKeyCodes[rand() % m_RosterLength] };
    wstring sAwakeKeyCode{};

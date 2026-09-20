@@ -9,8 +9,6 @@
 constexpr auto VK_UNASSIGNED_01 = 0x97;
 constexpr auto VK_UNASSIGNED_10 = 0xE8;
 
-constexpr auto BTN_TEXT_PAUSE = L"&Pause";
-constexpr auto BTN_TEXT_RESUME = L"&Resume";
 constexpr auto PREF_INI_FILE = L"StayAwake.ini";
 constexpr auto PREF_DEFAULTS = L"Defaults";
 constexpr auto PREF_LEGACY_KEYCODE = L"AwakeKeyCode";
@@ -22,11 +20,14 @@ constexpr auto PREF_INTERVAL_LEGACY = L"TimerIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MINIMUM = L"MinimumIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MAXIMUM = L"MaximumIntervalInSeconds";
 
+constexpr auto BTN_TEXT_PAUSE = L"&Pause";
+constexpr auto BTN_TEXT_RESUME = L"&Resume";
+
 constexpr auto MIN_PERIOD{ 10 };
 constexpr auto MAX_PERIOD{ 9990 };
 constexpr auto DEF_PERIOD{ 240 };
 
-constexpr auto LEN_KEYCODES_ROSTER{ 12 };
+constexpr auto LEN_ROSTER_KEYCODES{ 12 };
 constexpr auto DEF_SELECTED_KEYCODES = L"001111111111";
 
 const wstring MIN_MAX_PERIOD = to_wstring(MIN_PERIOD) + L" and " + to_wstring(MAX_PERIOD);
@@ -64,7 +65,7 @@ private:
    bool m_bMinimized{};
    UINT_PTR m_TimerID{42};
 
-   UINT m_RosterKeyCodes[LEN_KEYCODES_ROSTER]{};
+   UINT m_RosterKeyCodes[LEN_ROSTER_KEYCODES]{};
    UINT m_RosterLength{};
 
    UINT m_IntervalMinSeconds{};
@@ -93,7 +94,7 @@ private:
 
    void InitConfigFilePath();
    void InitIntervals();
-   void InitRoster();
+   void InitRosterKeyCodes();
    void InitAwakes();
    void InitTrayIcon();
    void MinimizeToTray();

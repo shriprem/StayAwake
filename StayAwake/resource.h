@@ -39,7 +39,6 @@
 #define IDC_KEY_UNASSIGNED_10           1062
 #define IDC_KEY_SELECT_ALL_BTN          1071
 #define IDC_KEY_SELECT_NONE_BTN         1072
-#define IDC_KEY_SELECT_APPLY_BTN        1073
 
 #define IDC_ABOUT_NAME                  1101
 #define IDC_ABOUT_VERSION               1102
