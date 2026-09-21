@@ -1,6 +1,6 @@
 ## Version History
 
-### Version 1.3.0.0 [September, 2026]
+### Version 1.3.0.0 [September 21, 2026]
 
 1. StayAwake will use a random pick from a roster of user-specified key codes for each Awake event. See enhancement request: [#15](https://github.com/shriprem/StayAwake/issues/15).
 

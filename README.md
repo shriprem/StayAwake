@@ -74,9 +74,7 @@ When the _Start Minimized_ option is enabled, StayAwake will launch and minimize
 StayAwake can randomly pick any of the 12 key codes during each simulation. In this popup, users can specify _at least_ one OR a select few OR all of the 12 key codes to be included in the simulation roster.
 
 #### Scroll Lock cycling
-Scroll Lock toggling will work just fine for most users.
-
-However, some users using Remote Desktop alongside have reported spurious keystrokes being transmitted between the connected Windows devices. Users in such situations should explore other key simulation options.
+Scroll Lock toggling will work just fine for most users. However, some users using Remote Desktop alongside have reported spurious keystrokes being transmitted between the connected Windows devices. Users in such situations should explore other key simulation options.
 
 #### Volume Up & Down
 With this option, StayAwake will simulate a _Volume Down_ key press, immediately followed by a _Volume Up_ key press, thereby resulting in no net change in volume level.
