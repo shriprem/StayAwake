@@ -90,7 +90,7 @@ With these options, StayWake will simulate key press of an unassigned keycode.
 
 These unassigned keycodes have been obtained from this Microsoft article on [Virtual-Key Codes](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes).
 
-Microsoft may start utilizing any of these unassigned codes in the future -- but not all of them in one go. Hence all 10 of the currently unassigned codes have been included in the [StayAwake Key Simulation list](#stayawake--key-simulation-list) so that users can switch to another still available unassigned keycode.
+Microsoft may start utilizing any of these unassigned codes in the future -- but not all of them in one go. Hence all 10 of the currently unassigned codes have been included in the [Select multiple Key Codes](#select-multiple-key-codes) popup so that users can select other still available unassigned keycodes.
 
 #### Optional Tip
  You can verify StayAwake in action by *temporarily* enabling only the [Volume Up & Down](#volume-up--down) key code and setting both *Minimum Awake Seconds* and *Maximum Awake Seconds* fields to 10 seconds.
@@ -109,7 +109,7 @@ When you minimize StayAwake, it will be represented by the System Tray icon show
 ## Configuration File Details
 StayAwake saves its configuration in a file named `StayAwake.ini`. This file is co-located in the `StayAwake.exe` application file folder. These key-value pairs are stored in this file:
 
-1. `SelectedKeyCodes`: This key stores a string of 12 characters -- each character indicating if a key code is selected or not with either a `1` or `0`, respectively.
+1. `SelectedKeyCodes`: This key stores a string of 12 characters -- each character indicating if a key code in the [Select multiple Key Codes](#select-multiple-key-codes) popup is selected or not with either a `1` or `0`, respectively.
 
 2. `MinimumIntervalInSeconds`: This key stores the minimum number of seconds between each StayAwake Key simulation as specified in the [Minimum Awake Seconds](#minimum-awake-seconds) field.
 
