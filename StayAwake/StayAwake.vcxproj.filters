@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StayAwake.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StayAwakeDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,6 +39,9 @@
     <ClInclude Include="SelectKeyCodesDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StayAwakeCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StayAwake.cpp">
@@ -60,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectKeyCodesDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StayAwakeCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
