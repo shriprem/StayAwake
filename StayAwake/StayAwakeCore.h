@@ -1,6 +1,12 @@
 #pragma once
+
+#include <mmdeviceapi.h>
+#include <endpointvolume.h>
 #include <string>
 #include <windows.h>
+
+#pragma comment(lib, "Ole32.lib")
+
 
 constexpr auto VK_UNASSIGNED_01 = 0x97;
 constexpr auto VK_UNASSIGNED_10 = 0xE8;
@@ -41,7 +47,11 @@ public:
 private:
    static void PressOneKey(BYTE vk, bool extended = false);
    static void PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended = false);
+   static void PressThreeKeys(BYTE vkFirst, BYTE vkSecond, BYTE vkThird, bool extended = false);
+
    static void MouseMove();
    static void MouseMoveZero();
+
+   bool GetMuteState();
 };
 

@@ -12,7 +12,10 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
 
    case 1:
       inputName = L"Volume Down && Up";
-      PressTwoKeys(VK_VOLUME_DOWN, VK_VOLUME_UP, true);
+      if (GetMuteState())
+         PressThreeKeys(VK_VOLUME_DOWN, VK_VOLUME_UP, VK_VOLUME_MUTE, true);
+      else
+         PressTwoKeys(VK_VOLUME_DOWN, VK_VOLUME_UP, true);
       break;
 
    case 2:
@@ -120,6 +123,45 @@ void StayAwakeCore::PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended)
    SendInput(4, input, sizeof(INPUT));
 }
 
+void StayAwakeCore::PressThreeKeys(BYTE vkFirst, BYTE vkSecond, BYTE vkThird, bool extended)
+{
+   INPUT input[6] = {};
+
+   auto flags = (extended) ? KEYEVENTF_EXTENDEDKEY : 0;
+
+   input[0].type = INPUT_KEYBOARD;
+   input[0].ki.wVk = vkFirst;
+   input[0].ki.wScan = 0;
+   input[0].ki.dwFlags = flags;
+
+   input[1].type = INPUT_KEYBOARD;
+   input[1].ki.wVk = vkFirst;
+   input[1].ki.wScan = 0;
+   input[1].ki.dwFlags = KEYEVENTF_KEYUP | flags;
+
+   input[2].type = INPUT_KEYBOARD;
+   input[2].ki.wVk = vkSecond;
+   input[2].ki.wScan = 0;
+   input[2].ki.dwFlags = flags;
+
+   input[3].type = INPUT_KEYBOARD;
+   input[3].ki.wVk = vkSecond;
+   input[3].ki.wScan = 0;
+   input[3].ki.dwFlags = KEYEVENTF_KEYUP | flags;
+
+   input[4].type = INPUT_KEYBOARD;
+   input[4].ki.wVk = vkThird;
+   input[4].ki.wScan = 0;
+   input[4].ki.dwFlags = flags;
+
+   input[5].type = INPUT_KEYBOARD;
+   input[5].ki.wVk = vkThird;
+   input[5].ki.wScan = 0;
+   input[5].ki.dwFlags = KEYEVENTF_KEYUP | flags;
+
+   SendInput(6, input, sizeof(INPUT));
+}
+
 void StayAwakeCore::MouseMove()
 {
    INPUT input[2] = {};
@@ -151,3 +193,40 @@ void StayAwakeCore::MouseMoveZero()
 
    SendInput(1, input, sizeof(INPUT));
 }
+
+bool StayAwakeCore::GetMuteState()
+{
+   HRESULT hr{};
+
+   hr = CoInitialize(NULL);
+   if (FAILED(hr)) return false;
+
+   IMMDeviceEnumerator* enumerator = nullptr;
+   IMMDevice* device = nullptr;
+   IAudioEndpointVolume* endpointVolume = nullptr;
+
+   hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
+      CLSCTX_INPROC_SERVER,
+      __uuidof(IMMDeviceEnumerator),
+      (void**)&enumerator);
+   if (FAILED(hr)) return false;
+
+   hr = enumerator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
+   if (FAILED(hr)) { enumerator->Release(); return false; }
+
+   hr = device->Activate(__uuidof(IAudioEndpointVolume),
+      CLSCTX_INPROC_SERVER, NULL,
+      (void**)&endpointVolume);
+   if (FAILED(hr)) {
+      device->Release();
+      enumerator->Release();
+      return false;
+   }
+
+   BOOL bMuted{};
+   hr = endpointVolume->GetMute(&bMuted);
+   if (FAILED(hr)) return false;
+
+   return (bMuted==TRUE);
+}
+
