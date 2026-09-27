@@ -5,6 +5,11 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
 {
    switch (inputCode)
    {
+   case 0:
+      inputName = L"Scroll Lock cycling";
+      PressTwoKeys(VK_SCROLL, VK_SCROLL, false);
+      break;
+
    case 1:
       inputName = L"Volume Down && Up";
       PressTwoKeys(VK_VOLUME_DOWN, VK_VOLUME_UP, true);
@@ -30,9 +35,26 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
       PressOneKey(VK_UNASSIGNED_10, false);
       break;
 
+   case 13:
+   case 14:
+   case 15:
+   case 16:
+   case 17:
+   case 18:
+   case 19:
+   case 20:
+   case 21:
+   case 22:
+   case 23:
+   case 24:
+   {
+      inputName = L"F" + to_wstring(inputCode);
+      PressOneKey(static_cast<BYTE>(VK_F13 + inputCode - 13), false);
+      break;
+   }
+
    default:
-      inputName = L"Scroll Lock cycling";
-      PressTwoKeys(VK_SCROLL, VK_SCROLL, false);
+      inputName = L"Invalid Awake Key";
       break;
    }
 }
