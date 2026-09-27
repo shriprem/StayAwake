@@ -44,7 +44,7 @@ protected:
 
 private:
    wchar_t m_IniFilePath[MAX_PATH]{};
-   bool m_bMinimized{};
+   bool m_bMinimized{}, m_bSystemLocked{};
    UINT_PTR m_TimerID{42};
 
    UINT m_RosterKeyCodes[LEN_ROSTER_KEYCODES]{};
@@ -74,6 +74,7 @@ private:
    afx_msg void OnExit() { DestroyWindow(); };
    afx_msg void OnDestroy();
    afx_msg void OnStartMinimized();
+   afx_msg void OnSessionChange(UINT nSessionState, UINT nId);
 
    void InitConfigFilePath();
    void InitIntervals();

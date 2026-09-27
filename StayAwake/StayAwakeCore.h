@@ -4,8 +4,9 @@
 #include <endpointvolume.h>
 #include <string>
 #include <windows.h>
+#include <wtsapi32.h>
 
-#pragma comment(lib, "Ole32.lib")
+#pragma comment(lib, "Wtsapi32.lib")
 
 
 constexpr auto VK_UNASSIGNED_01 = 0x97;
