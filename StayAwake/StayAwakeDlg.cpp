@@ -386,7 +386,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
 
 #ifdef DEBUG_DISPLAY_IDLE_TICKS
-   Sleep((rand() % 5) + 1); // simulate a small delay to get a more accurate idle time
+   Sleep((rand() % 20) + 1); // simulate a small delay to get a more accurate idle time
    ULONGLONG idleTime = StayAwakeCore::GetIdleTimeMilliseconds();
    SetDlgItemText(IDC_STAYAWAKE_LAST_KEYCODE, (L"[" + sAwakeKeyCode + L":" + to_wstring(idleTime) + L" ms]").c_str());
 #else

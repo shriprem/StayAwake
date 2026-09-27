@@ -53,6 +53,12 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
       break;
    }
 
+   case 25:
+      inputName = L"Invisible Mouse Move";
+      MouseMove();
+      break;
+
+
    default:
       inputName = L"Invalid Awake Key";
       break;
@@ -116,4 +122,36 @@ void StayAwakeCore::PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended)
    input[3].ki.dwFlags = KEYEVENTF_KEYUP | flags;
 
    SendInput(4, input, sizeof(INPUT));
+}
+
+void StayAwakeCore::MouseMove()
+{
+   INPUT input[2] = {};
+
+   // Tiny move
+   input[0].type = INPUT_MOUSE;
+   input[0].mi.dx = 1;
+   input[0].mi.dy = 1;
+   input[0].mi.dwFlags = MOUSEEVENTF_MOVE;
+
+   // Move back
+   input[1].type = INPUT_MOUSE;
+   input[1].mi.dx = -1;
+   input[1].mi.dy = -1;
+   input[1].mi.dwFlags = MOUSEEVENTF_MOVE;
+
+   SendInput(2, input, sizeof(INPUT));
+}
+
+void StayAwakeCore::MouseMoveZero()
+{
+   INPUT input[1] = {};
+
+   // Zero move
+   input[0].type = INPUT_MOUSE;
+   input[0].mi.dx = 0;
+   input[0].mi.dy = 0;
+   input[0].mi.dwFlags = MOUSEEVENTF_MOVE;
+
+   SendInput(1, input, sizeof(INPUT));
 }

@@ -38,5 +38,7 @@ public:
 private:
    static void PressOneKey(BYTE vk, bool extended = false);
    static void PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended = false);
+   static void MouseMove();
+   static void MouseMoveZero();
 };
 
