@@ -32,7 +32,10 @@ using std::to_wstring;
 class StayAwakeCore
 {
 public:
-   static void SimulateInput(int inputCode, wstring& inputName);
+   StayAwakeCore() {};
+   ~StayAwakeCore() {};
+
+   void SimulateInput(int inputCode, wstring& inputName);
    static ULONGLONG GetIdleTimeMilliseconds();
 
 private:

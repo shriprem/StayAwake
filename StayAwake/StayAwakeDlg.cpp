@@ -379,7 +379,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    UINT nAwakeKeyCode{ m_RosterKeyCodes[rand() % m_RosterLength] };
    wstring sAwakeKeyCode{};
 
-   StayAwakeCore::SimulateInput(nAwakeKeyCode, sAwakeKeyCode);
+   m_AwakeCore.SimulateInput(nAwakeKeyCode, sAwakeKeyCode);
 
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
@@ -387,7 +387,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
 
 #ifdef DEBUG_DISPLAY_IDLE_TICKS
    Sleep((rand() % 20) + 1); // simulate a small delay to get a more accurate idle time
-   ULONGLONG idleTime = StayAwakeCore::GetIdleTimeMilliseconds();
+   ULONGLONG idleTime = m_AwakeCore.GetIdleTimeMilliseconds();
    SetDlgItemText(IDC_STAYAWAKE_LAST_KEYCODE, (L"[" + sAwakeKeyCode + L":" + to_wstring(idleTime) + L" ms]").c_str());
 #else
    SetDlgItemText(IDC_STAYAWAKE_LAST_KEYCODE, (L"[" + sAwakeKeyCode + L"]").c_str());
