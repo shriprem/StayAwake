@@ -53,6 +53,7 @@ private:
    UINT m_IntervalMinSeconds{};
    UINT m_IntervalMaxSeconds{};
 
+   StayAwakeCore m_AwakeCore;
    NOTIFYICONDATA m_TrayData{};
    CMenu m_menu;
 

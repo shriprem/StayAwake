@@ -24,11 +24,9 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
    case 8:
    case 9:
    case 10:
-   {
       inputName = L"Unassigned Key #" + to_wstring(inputCode - 1);
       PressOneKey(static_cast<BYTE>(VK_UNASSIGNED_01 + inputCode - 2), false);
       break;
-   }
 
    case 11:
       inputName = L"Unassigned Key #10";
@@ -47,11 +45,9 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
    case 22:
    case 23:
    case 24:
-   {
       inputName = L"F" + to_wstring(inputCode);
       PressOneKey(static_cast<BYTE>(VK_F13 + inputCode - 13), false);
       break;
-   }
 
    case 25:
       inputName = L"Invisible Mouse Move";
