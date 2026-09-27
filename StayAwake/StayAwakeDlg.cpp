@@ -379,49 +379,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    UINT nAwakeKeyCode{ m_RosterKeyCodes[rand() % m_RosterLength] };
    wstring sAwakeKeyCode{};
 
-   switch (nAwakeKeyCode)
-   {
-   case 1:
-      sAwakeKeyCode = L"Volume Down && Up";
-      keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-      keybd_event(VK_VOLUME_DOWN, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-      Sleep(10);
-      keybd_event(VK_VOLUME_UP, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-      keybd_event(VK_VOLUME_UP, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-      break;
-
-   case 2:
-   case 3:
-   case 4:
-   case 5:
-   case 6:
-   case 7:
-   case 8:
-   case 9:
-   case 10:
-   {
-      sAwakeKeyCode = L"Unassigned Key #" + to_wstring(nAwakeKeyCode - 1);
-      BYTE keycode{ static_cast<BYTE>(VK_UNASSIGNED_01 + nAwakeKeyCode - 2) };
-      keybd_event(keycode, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-      keybd_event(keycode, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-      break;
-   }
-
-   case 11:
-      sAwakeKeyCode = L"Unassigned Key #10";
-      keybd_event(VK_UNASSIGNED_10, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-      keybd_event(VK_UNASSIGNED_10, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-      break;
-
-   default:
-      sAwakeKeyCode = L"Scroll Lock cycling";
-      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-      Sleep(10);
-      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-      keybd_event(VK_SCROLL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-      break;
-   }
+   StayAwakeCore::SimulateInput(nAwakeKeyCode, sAwakeKeyCode);
 
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
