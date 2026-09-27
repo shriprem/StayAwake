@@ -33,5 +33,9 @@ class StayAwakeCore
 {
 public:
    static void SimulateInput(int inputCode, wstring& inputName);
+
+private:
+   static void PressOneKey(BYTE vk, bool extended = false);
+   static void PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended = false);
 };
 
