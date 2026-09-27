@@ -37,6 +37,17 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
    }
 }
 
+ULONGLONG StayAwakeCore::GetIdleTimeMilliseconds()
+{
+   LASTINPUTINFO lii = {};
+   lii.cbSize = sizeof(LASTINPUTINFO);
+
+   if (!GetLastInputInfo(&lii))
+      return 0; // error case
+
+   return GetTickCount64() - lii.dwTime;
+}
+
 void StayAwakeCore::PressOneKey(BYTE vk, bool extended)
 {
    INPUT input[2] = {};

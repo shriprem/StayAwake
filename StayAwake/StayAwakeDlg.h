@@ -7,6 +7,8 @@
 #define WM_TRAY_NOTIFY     (WM_APP + 2)
 #define WM_RESTORE_DIALOG  theApp.WM_SHOWFIRSTINSTANCE
 
+#define DEBUG_DISPLAY_IDLE_TICKS
+
 constexpr auto BTN_TEXT_PAUSE = L"&Pause";
 constexpr auto BTN_TEXT_RESUME = L"&Resume";
 

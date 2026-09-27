@@ -33,6 +33,7 @@ class StayAwakeCore
 {
 public:
    static void SimulateInput(int inputCode, wstring& inputName);
+   static ULONGLONG GetIdleTimeMilliseconds();
 
 private:
    static void PressOneKey(BYTE vk, bool extended = false);
