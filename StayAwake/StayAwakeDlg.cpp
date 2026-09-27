@@ -91,6 +91,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
    ON_BN_CLICKED(IDC_STAYAWAKE_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResume)
    ON_BN_CLICKED(IDC_START_MINIMIZED, &CStayAwakeDlg::OnStartMinimized)
+   ON_WM_WTSSESSION_CHANGE()
 END_MESSAGE_MAP()
 
 
@@ -160,6 +161,8 @@ void CStayAwakeDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
+   WTSRegisterSessionNotification(m_hWnd, NOTIFY_FOR_THIS_SESSION);
+
    if (GetPreference(PREF_MULTI_INSTANCE, L"N") != L"Y" && Utils::getProcessRunCount(L"StayAwake.exe") > 1)
    {
       ::PostMessage(HWND_BROADCAST, theApp.WM_SHOWFIRSTINSTANCE, 0, 0);
@@ -368,6 +371,7 @@ void CStayAwakeDlg::OnDestroy()
    if (m_bMinimized) Shell_NotifyIcon(NIM_DELETE, &m_TrayData);
    m_menu.DestroyMenu();
 
+   WTSUnRegisterSessionNotification(m_hWnd);
    CDialogEx::OnDestroy();
 }
 
@@ -375,6 +379,12 @@ void CStayAwakeDlg::OnDestroy()
 void CStayAwakeDlg::SimulateAwakeKeyPress()
 {
    if (!m_RosterLength) InitRosterKeyCodes();
+
+   if (m_bSystemLocked)
+   {
+      SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, L"PAUSED since Windows is LOCKED");
+      return;
+   }
 
    UINT nAwakeKeyCode{ m_RosterKeyCodes[rand() % m_RosterLength] };
    wstring sAwakeKeyCode{};
@@ -477,4 +487,20 @@ void CStayAwakeDlg::OnStartMinimized()
 {
    WritePrivateProfileString(PREF_DEFAULTS, PREF_START_MINIMIZED,
       (IsDlgButtonChecked(IDC_START_MINIMIZED) == BST_CHECKED) ? L"Y" : L"N", m_IniFilePath);
+}
+
+void CStayAwakeDlg::OnSessionChange(UINT nSessionState, UINT nId)
+{
+   switch (nSessionState)
+   {
+   case WTS_SESSION_LOCK:
+      m_bSystemLocked = true;
+      break;
+
+   case WTS_SESSION_UNLOCK:
+      m_bSystemLocked = false;
+      break;
+   }
+
+   CDialogEx::OnSessionChange(nSessionState, nId);
 }
