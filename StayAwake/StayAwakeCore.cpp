@@ -1,5 +1,94 @@
 #include "pch.h"
+
+#include "resource.h"
 #include "StayAwakeCore.h"
+
+void StayAwakeCore::SetConfigFilePath(LPTSTR iniFilePath)
+{
+   wcscpy_s(sIniFilePath, MAX_PATH, iniFilePath);
+}
+
+wstring StayAwakeCore::GetSelectedKeyCodes()
+{
+   wstring sKeyCodes{ GetPreference(PREF_SELECTED_KEYCODES, L"N/A") };
+
+   if (sKeyCodes == L"N/A") {
+      // Migrate single legacy key code to 25 bits
+      UINT nLegacyKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_LEGACY_KEYCODE, 99, sIniFilePath);
+
+      if (nLegacyKeyCode == 99)
+         sKeyCodes = DEF_SELECTED_KEYCODES;
+      else
+      {
+         sKeyCodes = wstring(LEN_ROSTER_KEYCODES, L'0');
+         sKeyCodes.replace(nLegacyKeyCode % LEN_ROSTER_KEYCODES, 1, L"1");
+      }
+
+      WritePrivateProfileString(PREF_DEFAULTS, PREF_LEGACY_KEYCODE, nullptr, sIniFilePath);
+      SaveSelectedKeyCodes(sKeyCodes);
+   }
+   else if (sKeyCodes.length() == (IDC_KEY_F13 - IDC_KEY_SCROLL_LOCK))
+   {
+      // Migrate 12-bit legacy key codes to 25 bits
+      sKeyCodes += wstring(LEN_ROSTER_KEYCODES - sKeyCodes.length(), L'1');
+      SaveSelectedKeyCodes(sKeyCodes);
+   }
+   else if (!CheckSelectedKeyCodes(sKeyCodes))
+   {
+      sKeyCodes = DEF_SELECTED_KEYCODES;
+      SaveSelectedKeyCodes(sKeyCodes);
+   }
+
+   return sKeyCodes;
+}
+
+bool StayAwakeCore::CheckSelectedKeyCodes(wstring sKeyCodes)
+{
+   return (sKeyCodes.length() == LEN_ROSTER_KEYCODES &&
+      sKeyCodes != wstring(LEN_ROSTER_KEYCODES, L'0') &&
+      sKeyCodes.find_first_not_of(L"01") == std::string::npos);
+}
+
+bool StayAwakeCore::SaveSelectedKeyCodes(wstring sKeyCodes)
+{
+   return CheckSelectedKeyCodes(sKeyCodes) && SetPreference(PREF_SELECTED_KEYCODES, sKeyCodes);
+}
+
+void StayAwakeCore::InitIntervals(UINT& minSeconds, UINT& maxSeconds) const
+{
+   int nIntervalLegacy{}, nIntervalMin{}, nIntervalMax{};
+
+   nIntervalLegacy = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_LEGACY, DEF_PERIOD, sIniFilePath);
+   if (nIntervalLegacy < MIN_PERIOD || nIntervalLegacy > MAX_PERIOD)
+      nIntervalLegacy = DEF_PERIOD;
+
+   nIntervalMin = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_MINIMUM, nIntervalLegacy, sIniFilePath);
+   if (nIntervalMin < MIN_PERIOD || nIntervalMin > MAX_PERIOD)
+      nIntervalMin = DEF_PERIOD;
+
+   nIntervalMax = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_MAXIMUM, nIntervalLegacy, sIniFilePath);
+   if (nIntervalMax < MIN_PERIOD || nIntervalMax > MAX_PERIOD)
+      nIntervalMax = DEF_PERIOD;
+
+   minSeconds = (nIntervalMin <= nIntervalMax) ? nIntervalMin : nIntervalMax;
+   maxSeconds = (nIntervalMin >= nIntervalMax) ? nIntervalMin : nIntervalMax;
+}
+
+wstring StayAwakeCore::GetPreference(wstring key, wstring defaultVal) const
+{
+   const int bufSize{ MAX_PATH };
+   wstring ftBuf(bufSize, '\0');
+
+   GetPrivateProfileString(PREF_DEFAULTS, key.c_str(), defaultVal.c_str(), ftBuf.data(), bufSize, sIniFilePath);
+
+   return wstring{ ftBuf.c_str() };
+}
+
+bool StayAwakeCore::SetPreference(wstring key, wstring setVal) const
+{
+   return WritePrivateProfileString(PREF_DEFAULTS, key.c_str(), setVal.c_str(), sIniFilePath);
+}
+
 
 void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
 {
@@ -36,6 +125,7 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
       PressOneKey(VK_UNASSIGNED_10, false);
       break;
 
+   case 12:
    case 13:
    case 14:
    case 15:
@@ -47,14 +137,21 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
    case 21:
    case 22:
    case 23:
-   case 24:
-      inputName = L"F" + to_wstring(inputCode);
-      PressOneKey(static_cast<BYTE>(VK_F13 + inputCode - 13), false);
+      inputName = L"F" + to_wstring(inputCode + 1);
+      PressOneKey(static_cast<BYTE>(VK_F13 + inputCode - 12), false);
       break;
 
-   case 25:
-      inputName = L"Invisible Mouse Move";
-      MouseMove();
+   case 24:
+      if (GetPreference(PREF_MOUSE_MOVE_ZERO, L"Y") == L"Y")
+      {
+         inputName = L"Zero Mouse Move";
+         MouseMoveZero();
+      }
+      else
+      {
+         inputName = L"Tiny Mouse Move";
+         MouseMoveTiny();
+      }
       break;
 
 
@@ -162,7 +259,7 @@ void StayAwakeCore::PressThreeKeys(BYTE vkFirst, BYTE vkSecond, BYTE vkThird, bo
    SendInput(6, input, sizeof(INPUT));
 }
 
-void StayAwakeCore::MouseMove()
+void StayAwakeCore::MouseMoveTiny()
 {
    INPUT input[2] = {};
 

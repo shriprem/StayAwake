@@ -3,6 +3,7 @@
 #include "StayAwakeCore.h"
 #include "Utils.h"
 
+
 #define WM_POST_OPEN       (WM_APP + 1)
 #define WM_TRAY_NOTIFY     (WM_APP + 2)
 #define WM_RESTORE_DIALOG  theApp.WM_SHOWFIRSTINSTANCE
@@ -30,11 +31,6 @@ protected:
    virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
 
-public:
-   wstring GetSelectedKeyCodes();
-   bool CheckSelectedKeyCodes(wstring sKeyCodes);
-   bool SaveSelectedKeyCodes(wstring sKeyCodes);
-
 protected:
    HICON m_hIcon;
 
@@ -43,7 +39,6 @@ protected:
    DECLARE_MESSAGE_MAP()
 
 private:
-   wchar_t m_IniFilePath[MAX_PATH]{};
    bool m_bMinimized{}, m_bSystemLocked{};
    UINT_PTR m_TimerID{42};
 
@@ -53,7 +48,7 @@ private:
    UINT m_IntervalMinSeconds{};
    UINT m_IntervalMaxSeconds{};
 
-   StayAwakeCore m_AwakeCore;
+   StayAwakeCore m_AwakeCore{};
    NOTIFYICONDATA m_TrayData{};
    CMenu m_menu;
 
@@ -77,7 +72,6 @@ private:
    afx_msg void OnSessionChange(UINT nSessionState, UINT nId);
 
    void InitConfigFilePath();
-   void InitIntervals();
    void InitRosterKeyCodes();
    void InitAwakes();
    void InitTrayIcon();
@@ -87,6 +81,5 @@ private:
    void SimulateAwakeKeyPress();
    void ShowPausedInfo(bool both);
 
-   wstring GetPreference(wstring key, wstring defaultVal);
    bool IsTimerPaused();
 };

@@ -26,51 +26,6 @@ void CStayAwakeDlg::DoDataExchange(CDataExchange* pDX)
    CDialogEx::DoDataExchange(pDX);
 }
 
-wstring CStayAwakeDlg::GetSelectedKeyCodes()
-{
-   const int bufSize{ LEN_ROSTER_KEYCODES + 1 };
-   wchar_t sBuf[bufSize]{};
-
-   GetPrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, L"N/A", sBuf, bufSize, m_IniFilePath);
-
-   wstring sKeyCodes{ sBuf };
-
-   if (sKeyCodes == L"N/A") {
-      UINT nLegacyKeyCode = GetPrivateProfileInt(PREF_DEFAULTS, PREF_LEGACY_KEYCODE, 99, m_IniFilePath);
-
-      if (nLegacyKeyCode == 99)
-         sKeyCodes = DEF_SELECTED_KEYCODES;
-      else
-      {
-         sKeyCodes = wstring(LEN_ROSTER_KEYCODES, L'0');
-         sKeyCodes.replace(nLegacyKeyCode % LEN_ROSTER_KEYCODES, 1, L"1");
-      }
-
-      WritePrivateProfileString(PREF_DEFAULTS, PREF_LEGACY_KEYCODE, nullptr, m_IniFilePath);
-      SaveSelectedKeyCodes(sKeyCodes);
-   }
-   else if (!CheckSelectedKeyCodes(sKeyCodes))
-   {
-      sKeyCodes = DEF_SELECTED_KEYCODES;
-      SaveSelectedKeyCodes(sKeyCodes);
-   }
-
-   return sKeyCodes;
-}
-
-bool CStayAwakeDlg::CheckSelectedKeyCodes(wstring sKeyCodes)
-{
-   return (sKeyCodes.length() == LEN_ROSTER_KEYCODES &&
-      sKeyCodes != wstring(LEN_ROSTER_KEYCODES, L'0') &&
-      sKeyCodes.find_first_not_of(L"01") == std::string::npos);
-}
-
-bool CStayAwakeDlg::SaveSelectedKeyCodes(wstring sKeyCodes)
-{
-   return CheckSelectedKeyCodes(sKeyCodes) &&
-      WritePrivateProfileString(PREF_DEFAULTS, PREF_SELECTED_KEYCODES, sKeyCodes.c_str(), m_IniFilePath);
-}
-
 BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_WM_SYSCOMMAND()
    ON_MESSAGE(WM_POST_OPEN, &CStayAwakeDlg::OnPostOpen)
@@ -127,7 +82,8 @@ BOOL CStayAwakeDlg::OnInitDialog()
    SetIcon(m_hIcon, FALSE);		// Set small icon
 
    InitConfigFilePath();
-   InitIntervals();
+
+   m_AwakeCore.InitIntervals(m_IntervalMinSeconds, m_IntervalMaxSeconds);
    SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
    SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
 
@@ -163,7 +119,7 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
 {
    WTSRegisterSessionNotification(m_hWnd, NOTIFY_FOR_THIS_SESSION);
 
-   if (GetPreference(PREF_MULTI_INSTANCE, L"N") != L"Y" && Utils::getProcessRunCount(L"StayAwake.exe") > 1)
+   if (m_AwakeCore.GetPreference(PREF_MULTI_INSTANCE, L"N") != L"Y" && Utils::getProcessRunCount(L"StayAwake.exe") > 1)
    {
       ::PostMessage(HWND_BROADCAST, theApp.WM_SHOWFIRSTINSTANCE, 0, 0);
 
@@ -176,7 +132,7 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
    else
       InitAwakes();
 
-   BOOL bMinimized = (GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
+   BOOL bMinimized = (m_AwakeCore.GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
    CheckDlgButton(IDC_START_MINIMIZED, bMinimized ? BST_CHECKED : BST_UNCHECKED);
    if (bMinimized) MinimizeToTray();
 
@@ -247,7 +203,7 @@ void CStayAwakeDlg::OnKillfocusIntervalMax()
 
 void CStayAwakeDlg::OnSetupKeyCodesRosterClicked()
 {
-   CSelectKeyCodesDlg dlgSelectKeyCodes(this);
+   CSelectKeyCodesDlg dlgSelectKeyCodes(this, m_AwakeCore);
 
    if (dlgSelectKeyCodes.DoModal() == IDOK)
    {
@@ -265,41 +221,23 @@ void CStayAwakeDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CStayAwakeDlg::InitConfigFilePath()
 {
-   DWORD size = GetModuleFileNameW(nullptr, m_IniFilePath, MAX_PATH);
+   wchar_t sIniFilePath[MAX_PATH]{};
+   DWORD size = GetModuleFileNameW(nullptr, sIniFilePath, MAX_PATH);
 
-   if (size > 0 && size < MAX_PATH &&
-      SUCCEEDED(PathCchRemoveFileSpec(m_IniFilePath, MAX_PATH)) &&
-      SUCCEEDED(PathCchAppend(m_IniFilePath, MAX_PATH, PREF_INI_FILE)))
-      return;
+   if (size <= 0 || size > MAX_PATH ||
+      FAILED(PathCchRemoveFileSpec(sIniFilePath, MAX_PATH)) ||
+      FAILED(PathCchAppend(sIniFilePath, MAX_PATH, PREF_INI_FILE)))
+   {
+      wcscpy_s(sIniFilePath, MAX_PATH, L".\\");    // last resort: working directory
+      wcscat_s(sIniFilePath, MAX_PATH, PREF_INI_FILE);
+   }
 
-   wcscpy_s(m_IniFilePath, MAX_PATH, L".\\");    // last resort: working directory
-   wcscat_s(m_IniFilePath, MAX_PATH, PREF_INI_FILE);
-}
-
-
-void CStayAwakeDlg::InitIntervals()
-{
-   int nIntervalLegacy{}, nIntervalMin{}, nIntervalMax{};
-
-   nIntervalLegacy = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_LEGACY, DEF_PERIOD, m_IniFilePath);
-   if (nIntervalLegacy < MIN_PERIOD || nIntervalLegacy > MAX_PERIOD)
-      nIntervalLegacy = DEF_PERIOD;
-
-   nIntervalMin = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_MINIMUM, nIntervalLegacy, m_IniFilePath);
-   if (nIntervalMin < MIN_PERIOD || nIntervalMin > MAX_PERIOD)
-      nIntervalMin = DEF_PERIOD;
-
-   nIntervalMax = GetPrivateProfileInt(PREF_DEFAULTS, PREF_INTERVAL_MAXIMUM, nIntervalLegacy, m_IniFilePath);
-   if (nIntervalMax < MIN_PERIOD || nIntervalMax > MAX_PERIOD)
-      nIntervalMax = DEF_PERIOD;
-
-   m_IntervalMinSeconds = (nIntervalMin <= nIntervalMax) ? nIntervalMin : nIntervalMax;
-   m_IntervalMaxSeconds = (nIntervalMin >= nIntervalMax) ? nIntervalMin : nIntervalMax;
+   m_AwakeCore.SetConfigFilePath(sIniFilePath);
 }
 
 void CStayAwakeDlg::InitRosterKeyCodes()
 {
-   wstring sSelectedKeyCodes{ GetSelectedKeyCodes() };
+   wstring sSelectedKeyCodes{ m_AwakeCore.GetSelectedKeyCodes() };
 
    m_RosterLength = 0;
 
@@ -316,7 +254,7 @@ void CStayAwakeDlg::InitAwakes()
    SimulateAwakeKeyPress();
 
    SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
-   WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_PAUSED, L"N", m_IniFilePath);
+   m_AwakeCore.SetPreference(PREF_AWAKE_PAUSED, L"N");
 }
 
 void CStayAwakeDlg::InitTrayIcon()
@@ -431,8 +369,8 @@ void CStayAwakeDlg::OnSetInterval()
       SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
    }
 
-   WritePrivateProfileString(PREF_DEFAULTS, PREF_INTERVAL_MINIMUM, to_wstring(m_IntervalMinSeconds).c_str(), m_IniFilePath);
-   WritePrivateProfileString(PREF_DEFAULTS, PREF_INTERVAL_MAXIMUM, to_wstring(m_IntervalMaxSeconds).c_str(), m_IniFilePath);
+   m_AwakeCore.SetPreference(PREF_INTERVAL_MINIMUM, to_wstring(m_IntervalMinSeconds));
+   m_AwakeCore.SetPreference(PREF_INTERVAL_MAXIMUM, to_wstring(m_IntervalMaxSeconds));
 
    InitAwakes();
 }
@@ -455,24 +393,14 @@ void CStayAwakeDlg::OnPauseResume()
       KillTimer(m_TimerID);
 
       SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_RESUME);
-      WritePrivateProfileString(PREF_DEFAULTS, PREF_AWAKE_PAUSED, L"Y", m_IniFilePath);
+      m_AwakeCore.SetPreference(PREF_AWAKE_PAUSED, L"Y");
       ShowPausedInfo(false);
    }
 }
 
-wstring CStayAwakeDlg::GetPreference(wstring key, wstring defaultVal)
-{
-   const int bufSize{ MAX_PATH };
-   wstring ftBuf(bufSize, '\0');
-
-   GetPrivateProfileString(PREF_DEFAULTS, key.c_str(), defaultVal.c_str(), ftBuf.data(), bufSize, m_IniFilePath);
-
-   return wstring{ ftBuf.c_str() };
-}
-
 bool CStayAwakeDlg::IsTimerPaused()
 {
-   return (GetPreference(PREF_AWAKE_PAUSED, L"N") == L"Y");
+   return (m_AwakeCore.GetPreference(PREF_AWAKE_PAUSED, L"N") == L"Y");
 }
 
 void CStayAwakeDlg::ShowPausedInfo(bool both)
@@ -485,8 +413,7 @@ void CStayAwakeDlg::ShowPausedInfo(bool both)
 
 void CStayAwakeDlg::OnStartMinimized()
 {
-   WritePrivateProfileString(PREF_DEFAULTS, PREF_START_MINIMIZED,
-      (IsDlgButtonChecked(IDC_START_MINIMIZED) == BST_CHECKED) ? L"Y" : L"N", m_IniFilePath);
+   m_AwakeCore.SetPreference(PREF_START_MINIMIZED, (IsDlgButtonChecked(IDC_START_MINIMIZED) == BST_CHECKED) ? L"Y" : L"N");
 }
 
 void CStayAwakeDlg::OnSessionChange(UINT nSessionState, UINT nId)
