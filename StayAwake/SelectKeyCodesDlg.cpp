@@ -1,22 +1,19 @@
-// CSelectKeyCodesDlg.cpp : implementation file
-//
-
 #include "pch.h"
 #include "StayAwake.h"
 #include "afxdialogex.h"
 #include "SelectKeyCodesDlg.h"
 
-static_assert(IDC_KEY_UNASSIGNED_10 - IDC_KEY_SCROLL_LOCK + 1 == LEN_ROSTER_KEYCODES, "Roster checkbox IDs must be consecutive");
+static_assert(IDC_MOUSE_MOVE - IDC_KEY_SCROLL_LOCK + 1 == LEN_ROSTER_KEYCODES, "Roster checkbox IDs must be consecutive");
 
 // CSelectKeyCodesDlg dialog
 
 IMPLEMENT_DYNAMIC(CSelectKeyCodesDlg, CDialogEx)
 
-CSelectKeyCodesDlg::CSelectKeyCodesDlg(CStayAwakeDlg* pCaller)
-	: CDialogEx(IDD_SELECT_KEYCODES_DIALOG, pCaller)
-	, m_pCaller(pCaller)
+CSelectKeyCodesDlg::CSelectKeyCodesDlg(CWnd* pParent, StayAwakeCore& pAwakeCore)
+   : CDialogEx(IDD_SELECT_KEYCODES_DIALOG, pParent)
+   , m_AwakeCore(pAwakeCore)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 CSelectKeyCodesDlg::~CSelectKeyCodesDlg()
@@ -25,63 +22,89 @@ CSelectKeyCodesDlg::~CSelectKeyCodesDlg()
 
 void CSelectKeyCodesDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+   CDialogEx::DoDataExchange(pDX);
 }
 
 
 BEGIN_MESSAGE_MAP(CSelectKeyCodesDlg, CDialogEx)
-	ON_BN_CLICKED(IDOK, &CSelectKeyCodesDlg::OnOK)
-	ON_BN_CLICKED(IDC_KEY_SELECT_ALL_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectAllBtn)
-	ON_BN_CLICKED(IDC_KEY_SELECT_NONE_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectNoneBtn)
+   ON_BN_CLICKED(IDOK, &CSelectKeyCodesDlg::OnOK)
+   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectAllBtn)
+   ON_BN_CLICKED(IDC_KEY_SELECT_NONE_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectNoneBtn)
+   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_UNASSGND_BTN, &CSelectKeyCodesDlg::OnBnClickedSelectAllUnassignedKeys)
+   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_EXT_FN_BTN, &CSelectKeyCodesDlg::OnBnClickedSelectAllExtFnKeys)
+   ON_BN_CLICKED(IDC_MOUSE_MOVE, &CSelectKeyCodesDlg::OnClickedMouseMove)
 END_MESSAGE_MAP()
 
 
 BOOL CSelectKeyCodesDlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+   CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+   SetIcon(m_hIcon, TRUE);       // Set big icon
+   SetIcon(m_hIcon, FALSE);      // Set small icon
 
-	CheckAllBoxes(m_pCaller->GetSelectedKeyCodes());
+   CheckAllBoxes(m_AwakeCore.GetSelectedKeyCodes());
 
-	return TRUE;  // return TRUE unless you set the focus to a control
+   CheckDlgButton(IDC_MOUSE_MOVE_ZERO,
+      (m_AwakeCore.GetPreference(PREF_MOUSE_MOVE_ZERO, L"Y") == L"Y") ? BST_CHECKED : BST_UNCHECKED);
+   OnClickedMouseMove();
+
+   return TRUE;  // return TRUE unless you set the focus to a control
 }
 
 void CSelectKeyCodesDlg::OnOK()
 {
-	wstring sSelectedKeyCodes{};
+   wstring sSelectedKeyCodes{};
 
-	for (int i{}; i < LEN_ROSTER_KEYCODES; i++)
-		sSelectedKeyCodes += (IsDlgButtonChecked(IDC_KEY_SCROLL_LOCK + i)) ? L"1" : L"0";
+   for (int i{}; i < LEN_ROSTER_KEYCODES; i++)
+      sSelectedKeyCodes += (IsDlgButtonChecked(IDC_KEY_SCROLL_LOCK + i)) ? L"1" : L"0";
 
-	if (sSelectedKeyCodes == wstring(LEN_ROSTER_KEYCODES, L'0'))
-	{
-		MessageBox(L"Please select at least one Key Code", L"Select multiple Key Codes", MB_ICONEXCLAMATION);
-		return;
-	}
+   if (sSelectedKeyCodes == wstring(LEN_ROSTER_KEYCODES, L'0'))
+   {
+      MessageBox(L"Please select at least one Key Code", SELECT_KEYCODES_DIALOG_TITLE, MB_ICONEXCLAMATION);
+      return;
+   }
 
-	if (!m_pCaller->SaveSelectedKeyCodes(sSelectedKeyCodes))
-	{
-		MessageBox(L"Unable to save to the StayAwake.ini file.", L"Select multiple Key Codes", MB_ICONEXCLAMATION);
-		return;
-	}
+   if (!m_AwakeCore.SaveSelectedKeyCodes(sSelectedKeyCodes))
+   {
+      MessageBox(L"Unable to save to the StayAwake.ini file.", SELECT_KEYCODES_DIALOG_TITLE, MB_ICONEXCLAMATION);
+      return;
+   }
 
-	CDialogEx::OnOK();
+   m_AwakeCore.SetPreference(PREF_MOUSE_MOVE_ZERO, IsDlgButtonChecked(IDC_MOUSE_MOVE_ZERO) ? L"Y" : L"N");
+
+   CDialogEx::OnOK();
 }
 
-void CSelectKeyCodesDlg::CheckAllBoxes(const wstring& sSelectedKeyCodes)
+void CSelectKeyCodesDlg::CheckAllBoxes(const wstring& sSelectedKeyCodes, int start, int endNext)
 {
-	for (int i{}; i < LEN_ROSTER_KEYCODES; i++)
-		CheckDlgButton(IDC_KEY_SCROLL_LOCK + i, sSelectedKeyCodes.at(i) == L'1');
+   for (int i{ start }; i < endNext; i++)
+      CheckDlgButton(i, sSelectedKeyCodes.at(i % IDC_KEY_SCROLL_LOCK) == L'1');
 }
 
 void CSelectKeyCodesDlg::OnClickedKeySelectAllBtn()
 {
-	CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'));
+   CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'));
+   OnClickedMouseMove();
 }
 
 void CSelectKeyCodesDlg::OnClickedKeySelectNoneBtn()
 {
-	CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'0'));
+   CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'0'));
+   OnClickedMouseMove();
+}
+
+void CSelectKeyCodesDlg::OnBnClickedSelectAllUnassignedKeys()
+{
+   CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'), IDC_KEY_UNASSIGNED_1, IDC_KEY_F13);
+}
+
+void CSelectKeyCodesDlg::OnBnClickedSelectAllExtFnKeys()
+{
+   CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'), IDC_KEY_F13, IDC_MOUSE_MOVE);
+}
+
+void CSelectKeyCodesDlg::OnClickedMouseMove()
+{
+   GetDlgItem(IDC_MOUSE_MOVE_ZERO)->EnableWindow(IsDlgButtonChecked(IDC_MOUSE_MOVE));
 }

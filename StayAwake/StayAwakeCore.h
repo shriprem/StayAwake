@@ -6,7 +6,12 @@
 #include <windows.h>
 #include <wtsapi32.h>
 
+#pragma comment(lib, "Ole32.lib")
 #pragma comment(lib, "Wtsapi32.lib")
+
+using std::string;
+using std::wstring;
+using std::to_wstring;
 
 
 constexpr auto VK_UNASSIGNED_01 = 0x97;
@@ -22,18 +27,15 @@ constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_INTERVAL_LEGACY = L"TimerIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MINIMUM = L"MinimumIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MAXIMUM = L"MaximumIntervalInSeconds";
+constexpr auto PREF_MOUSE_MOVE_ZERO = L"MouseMoveZeroPixels";
 
 constexpr auto MIN_PERIOD{ 10 };
 constexpr auto MAX_PERIOD{ 9990 };
 constexpr auto DEF_PERIOD{ 240 };
 
-constexpr auto LEN_ROSTER_KEYCODES{ 12 };
-constexpr auto DEF_SELECTED_KEYCODES = L"001111111111";
+constexpr auto LEN_ROSTER_KEYCODES{ 25 };
+const auto DEF_SELECTED_KEYCODES = L"00" + wstring(LEN_ROSTER_KEYCODES - 2, L'1');
 
-
-using std::string;
-using std::wstring;
-using std::to_wstring;
 
 
 class StayAwakeCore
@@ -42,16 +44,26 @@ public:
    StayAwakeCore() {};
    ~StayAwakeCore() {};
 
+   void SetConfigFilePath(LPTSTR iniFilePath);
+
+   wstring GetSelectedKeyCodes();
+   bool CheckSelectedKeyCodes(wstring sKeyCodes);
+   bool SaveSelectedKeyCodes(wstring sKeyCodes);
+   void InitIntervals(UINT& minSeconds, UINT& maxSeconds) const;
+   wstring GetPreference(wstring key, wstring defaultVal) const;
+   bool SetPreference(wstring key, wstring setVal) const;
+
    void SimulateInput(int inputCode, wstring& inputName);
-   static ULONGLONG GetIdleTimeMilliseconds();
+   ULONGLONG GetIdleTimeMilliseconds();
 
 private:
-   static void PressOneKey(BYTE vk, bool extended = false);
-   static void PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended = false);
-   static void PressThreeKeys(BYTE vkFirst, BYTE vkSecond, BYTE vkThird, bool extended = false);
+   wchar_t sIniFilePath[MAX_PATH]{};
 
-   static void MouseMove();
-   static void MouseMoveZero();
+   void PressOneKey(BYTE vk, bool extended = false);
+   void PressTwoKeys(BYTE vkFirst, BYTE vkSecond, bool extended = false);
+   void PressThreeKeys(BYTE vkFirst, BYTE vkSecond, BYTE vkThird, bool extended = false);
+   void MouseMoveTiny();
+   void MouseMoveZero();
 
    bool GetMuteState();
 };
