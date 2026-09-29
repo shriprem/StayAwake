@@ -27,13 +27,12 @@ constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_INTERVAL_LEGACY = L"TimerIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MINIMUM = L"MinimumIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MAXIMUM = L"MaximumIntervalInSeconds";
-constexpr auto PREF_MOUSE_MOVE_ZERO = L"MouseMoveZeroPixels";
 
 constexpr auto MIN_PERIOD{ 10 };
 constexpr auto MAX_PERIOD{ 9990 };
 constexpr auto DEF_PERIOD{ 240 };
 
-constexpr auto LEN_ROSTER_KEYCODES{ 25 };
+constexpr auto LEN_ROSTER_KEYCODES{ 26 };
 const auto DEF_SELECTED_KEYCODES = L"00" + wstring(LEN_ROSTER_KEYCODES - 2, L'1');
 
 

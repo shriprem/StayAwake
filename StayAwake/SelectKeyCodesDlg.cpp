@@ -3,7 +3,7 @@
 #include "afxdialogex.h"
 #include "SelectKeyCodesDlg.h"
 
-static_assert(IDC_MOUSE_MOVE - IDC_KEY_SCROLL_LOCK + 1 == LEN_ROSTER_KEYCODES, "Roster checkbox IDs must be consecutive");
+static_assert(IDC_MOUSE_MOVE_ZERO - IDC_KEY_SCROLL_LOCK + 1 == LEN_ROSTER_KEYCODES, "Roster checkbox IDs must be consecutive");
 
 // CSelectKeyCodesDlg dialog
 
@@ -30,9 +30,8 @@ BEGIN_MESSAGE_MAP(CSelectKeyCodesDlg, CDialogEx)
    ON_BN_CLICKED(IDOK, &CSelectKeyCodesDlg::OnOK)
    ON_BN_CLICKED(IDC_KEY_SELECT_ALL_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectAllBtn)
    ON_BN_CLICKED(IDC_KEY_SELECT_NONE_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectNoneBtn)
-   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_UNASSGND_BTN, &CSelectKeyCodesDlg::OnBnClickedSelectAllUnassignedKeys)
-   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_EXT_FN_BTN, &CSelectKeyCodesDlg::OnBnClickedSelectAllExtFnKeys)
-   ON_BN_CLICKED(IDC_MOUSE_MOVE, &CSelectKeyCodesDlg::OnClickedMouseMove)
+   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_UNASSGND_BTN, &CSelectKeyCodesDlg::OnClickedSelectAllUnassignedKeys)
+   ON_BN_CLICKED(IDC_KEY_SELECT_ALL_EXT_FN_BTN, &CSelectKeyCodesDlg::OnClickedSelectAllExtFnKeys)
 END_MESSAGE_MAP()
 
 
@@ -44,10 +43,6 @@ BOOL CSelectKeyCodesDlg::OnInitDialog()
    SetIcon(m_hIcon, FALSE);      // Set small icon
 
    CheckAllBoxes(m_AwakeCore.GetSelectedKeyCodes());
-
-   CheckDlgButton(IDC_MOUSE_MOVE_ZERO,
-      (m_AwakeCore.GetPreference(PREF_MOUSE_MOVE_ZERO, L"Y") == L"Y") ? BST_CHECKED : BST_UNCHECKED);
-   OnClickedMouseMove();
 
    return TRUE;  // return TRUE unless you set the focus to a control
 }
@@ -71,8 +66,6 @@ void CSelectKeyCodesDlg::OnOK()
       return;
    }
 
-   m_AwakeCore.SetPreference(PREF_MOUSE_MOVE_ZERO, IsDlgButtonChecked(IDC_MOUSE_MOVE_ZERO) ? L"Y" : L"N");
-
    CDialogEx::OnOK();
 }
 
@@ -85,26 +78,20 @@ void CSelectKeyCodesDlg::CheckAllBoxes(const wstring& sSelectedKeyCodes, int sta
 void CSelectKeyCodesDlg::OnClickedKeySelectAllBtn()
 {
    CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'));
-   OnClickedMouseMove();
 }
 
 void CSelectKeyCodesDlg::OnClickedKeySelectNoneBtn()
 {
    CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'0'));
-   OnClickedMouseMove();
 }
 
-void CSelectKeyCodesDlg::OnBnClickedSelectAllUnassignedKeys()
+void CSelectKeyCodesDlg::OnClickedSelectAllUnassignedKeys()
 {
    CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'), IDC_KEY_UNASSIGNED_1, IDC_KEY_F13);
 }
 
-void CSelectKeyCodesDlg::OnBnClickedSelectAllExtFnKeys()
+void CSelectKeyCodesDlg::OnClickedSelectAllExtFnKeys()
 {
    CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'), IDC_KEY_F13, IDC_MOUSE_MOVE);
 }
 
-void CSelectKeyCodesDlg::OnClickedMouseMove()
-{
-   GetDlgItem(IDC_MOUSE_MOVE_ZERO)->EnableWindow(IsDlgButtonChecked(IDC_MOUSE_MOVE));
-}

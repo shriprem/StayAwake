@@ -142,18 +142,14 @@ void StayAwakeCore::SimulateInput(int inputCode, wstring& inputName)
       break;
 
    case 24:
-      if (GetPreference(PREF_MOUSE_MOVE_ZERO, L"Y") == L"Y")
-      {
-         inputName = L"Zero Mouse Move";
-         MouseMoveZero();
-      }
-      else
-      {
-         inputName = L"Tiny Mouse Move";
-         MouseMoveTiny();
-      }
+      inputName = L"One-pixel Mouse Jiggle";
+      MouseMoveTiny();
       break;
 
+   case 25:
+      inputName = L"Zero-pixel Mouse Move";
+      MouseMoveZero();
+      break;
 
    default:
       inputName = L"Invalid Awake Key";
