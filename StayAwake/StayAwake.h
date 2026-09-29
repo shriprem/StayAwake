@@ -6,7 +6,7 @@
 
 #include "resource.h"
 
-constexpr auto LAST_CODE_UPDATE_TIME = "Sep 21 2026 - 15:45:46";
+constexpr auto LAST_CODE_UPDATE_TIME = L"Sep 21 2026 - 15:45:46";
 
 
 class CStayAwakeApp : public CWinApp
