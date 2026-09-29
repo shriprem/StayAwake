@@ -27,14 +27,12 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnClickedKeySelectAllBtn();
 	afx_msg void OnClickedKeySelectNoneBtn();
+	afx_msg void OnClickedSelectAllUnassignedKeys();
+	afx_msg void OnClickedSelectAllExtFnKeys();
 	afx_msg void OnOK();
 
 	DECLARE_MESSAGE_MAP()
 
 private:
 	void CheckAllBoxes(const wstring& sSelectedKeyCodes, int start = IDC_KEY_SCROLL_LOCK, int endNext = IDC_KEY_SCROLL_LOCK + LEN_ROSTER_KEYCODES);
-public:
-	afx_msg void OnBnClickedSelectAllUnassignedKeys();
-	afx_msg void OnBnClickedSelectAllExtFnKeys();
-	afx_msg void OnClickedMouseMove();
 };
