@@ -62,6 +62,7 @@
 #define IDC_ABOUT_BUILD_TIME            1203
 #define IDC_ABOUT_ATTRIBUTION           1204
 #define IDC_ABOUT_PROD_URL              1205
+#define IDC_ABOUT_PROD_REQ              1206
 
 #define IDM_EXIT                        32771
 #define IDM_RESTORE                     32772
