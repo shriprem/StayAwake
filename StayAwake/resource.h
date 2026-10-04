@@ -12,18 +12,18 @@
 #define IDR_MAINFRAME                   133
 #define IDB_ABOUT_BITMAP                134
 
-#define IDC_STAYAWAKE_KEYS_ROSTER_BTN   1001
-#define IDC_STAYAWAKE_INTERVAL_MIN      1002
-#define IDC_STAYAWAKE_INTERVAL_MAX      1003
-#define IDC_STAYAWAKE_SET_INTERVAL_BTN  1004
-#define IDC_STAYAWAKE_LAST_EVENT        1005
-#define IDC_STAYAWAKE_NEXT_EVENT        1006
-#define IDC_STAYAWAKE_LAST_KEYCODE      1007
-#define IDC_STAYAWAKE_PAUSE_RESUME_BTN  1011
-#define IDC_MINIMIZE                    1012
-#define IDC_EXIT                        1013
-#define IDC_START_MINIMIZED             1014
-#define IDC_ABOUT_BUTTON                1015
+#define IDC_SELECT_INPUT_OPTIONS_BTN    1001
+#define IDC_INTERVAL_MIN_EDIT           1002
+#define IDC_INTERVAL_MAX_EDIT           1003
+#define IDC_SET_TIMER_BTN               1004
+#define IDC_LAST_EVENT_TIME_INFO        1005
+#define IDC_LAST_EVENT_INPUT_INFO       1006
+#define IDC_NEXT_EVENT_TIME_INFO        1007
+#define IDC_PAUSE_RESUME_BTN            1011
+#define IDC_MINIMIZE_BTN                1012
+#define IDC_EXIT_BTN                    1013
+#define IDC_START_MINIMIZED_CBX         1014
+#define IDC_ABOUT_BTN                   1015
 
 #define IDC_KEY_SCROLL_LOCK             1101
 #define IDC_KEY_VOLUME_UP_DOWN          1102

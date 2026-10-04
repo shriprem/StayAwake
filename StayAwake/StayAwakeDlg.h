@@ -8,7 +8,7 @@
 #define WM_TRAY_NOTIFY     (WM_APP + 2)
 #define WM_RESTORE_DIALOG  theApp.WM_SHOWFIRSTINSTANCE
 
-#define DEBUG_DISPLAY_IDLE_TICKS
+//#define DEBUG_DISPLAY_IDLE_TICKS
 
 constexpr auto BTN_TEXT_PAUSE = L"&Pause";
 constexpr auto BTN_TEXT_RESUME = L"&Resume";
@@ -55,12 +55,12 @@ private:
    afx_msg LRESULT OnPostOpen(WPARAM wParam, LPARAM lParam);
    afx_msg LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);
    afx_msg LRESULT OnRestoreDialog(WPARAM wParam, LPARAM lParam);
-   afx_msg void OnSetupKeyCodesRosterClicked();
+   afx_msg void OnSelectInputOptionsClicked();
    afx_msg void OnTimer(UINT_PTR nIDEvent);
    afx_msg void OnKillfocusIntervalMin();
    afx_msg void OnKillfocusIntervalMax();
-   afx_msg void OnSetInterval();
-   afx_msg void OnPauseResume();
+   afx_msg void OnSetTimerClicked();
+   afx_msg void OnPauseResumeClicked();
    afx_msg void OnMinimize() { MinimizeToTray(); };
    afx_msg void OnClickedAboutButton();
    afx_msg void OnEnter() { /* Ignore ENTER key press */ };

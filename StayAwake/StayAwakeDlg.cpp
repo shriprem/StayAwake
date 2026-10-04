@@ -37,15 +37,15 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_COMMAND(IDM_EXIT, &CStayAwakeDlg::OnExit)
    ON_WM_DESTROY()
    ON_WM_TIMER()
-   ON_BN_CLICKED(IDC_MINIMIZE, &CStayAwakeDlg::OnMinimize)
-   ON_BN_CLICKED(IDC_EXIT, &CStayAwakeDlg::OnExit)
-   ON_BN_CLICKED(IDC_STAYAWAKE_KEYS_ROSTER_BTN, &CStayAwakeDlg::OnSetupKeyCodesRosterClicked)
-   ON_BN_CLICKED(IDC_STAYAWAKE_SET_INTERVAL_BTN, &CStayAwakeDlg::OnSetInterval)
-   ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MIN, &CStayAwakeDlg::OnKillfocusIntervalMin)
-   ON_EN_KILLFOCUS(IDC_STAYAWAKE_INTERVAL_MAX, &CStayAwakeDlg::OnKillfocusIntervalMax)
-   ON_BN_CLICKED(IDC_ABOUT_BUTTON, &CStayAwakeDlg::OnClickedAboutButton)
-   ON_BN_CLICKED(IDC_STAYAWAKE_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResume)
-   ON_BN_CLICKED(IDC_START_MINIMIZED, &CStayAwakeDlg::OnStartMinimized)
+   ON_BN_CLICKED(IDC_MINIMIZE_BTN, &CStayAwakeDlg::OnMinimize)
+   ON_BN_CLICKED(IDC_EXIT_BTN, &CStayAwakeDlg::OnExit)
+   ON_BN_CLICKED(IDC_SELECT_INPUT_OPTIONS_BTN, &CStayAwakeDlg::OnSelectInputOptionsClicked)
+   ON_BN_CLICKED(IDC_SET_TIMER_BTN, &CStayAwakeDlg::OnSetTimerClicked)
+   ON_EN_KILLFOCUS(IDC_INTERVAL_MIN_EDIT, &CStayAwakeDlg::OnKillfocusIntervalMin)
+   ON_EN_KILLFOCUS(IDC_INTERVAL_MAX_EDIT, &CStayAwakeDlg::OnKillfocusIntervalMax)
+   ON_BN_CLICKED(IDC_ABOUT_BTN, &CStayAwakeDlg::OnClickedAboutButton)
+   ON_BN_CLICKED(IDC_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResumeClicked)
+   ON_BN_CLICKED(IDC_START_MINIMIZED_CBX, &CStayAwakeDlg::OnStartMinimized)
    ON_WM_WTSSESSION_CHANGE()
 END_MESSAGE_MAP()
 
@@ -84,16 +84,16 @@ BOOL CStayAwakeDlg::OnInitDialog()
    InitConfigFilePath();
 
    m_AwakeCore.InitIntervals(m_IntervalMinSeconds, m_IntervalMaxSeconds);
-   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
-   SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
+   SetDlgItemInt(IDC_INTERVAL_MIN_EDIT, m_IntervalMinSeconds, FALSE);
+   SetDlgItemInt(IDC_INTERVAL_MAX_EDIT, m_IntervalMaxSeconds, FALSE);
 
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MIN, L"", INTERVAL_TOOLTIP, 3, TRUE);
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_STAYAWAKE_INTERVAL_MAX, L"", INTERVAL_TOOLTIP, 3, TRUE);
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_INTERVAL_MIN_EDIT, L"", INTERVAL_TOOLTIP, 3, TRUE);
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_INTERVAL_MAX_EDIT, L"", INTERVAL_TOOLTIP, 3, TRUE);
 
-   SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, IsTimerPaused() ? BTN_TEXT_RESUME : BTN_TEXT_PAUSE);
+   SetDlgItemText(IDC_PAUSE_RESUME_BTN, IsTimerPaused() ? BTN_TEXT_RESUME : BTN_TEXT_PAUSE);
 
-   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, L"", L"About StayAwake", 3, TRUE);
-   Utils::loadBitmap(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BUTTON, IDB_ABOUT_BITMAP);
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BTN, L"", L"About StayAwake", 3, TRUE);
+   Utils::loadBitmap(theApp.m_hInstance, m_hWnd, IDC_ABOUT_BTN, IDB_ABOUT_BITMAP);
 
    InitTrayIcon();
    PostMessage(WM_POST_OPEN, 0, 0);
@@ -133,7 +133,7 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
       InitAwakes();
 
    BOOL bMinimized = (m_AwakeCore.GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
-   CheckDlgButton(IDC_START_MINIMIZED, bMinimized ? BST_CHECKED : BST_UNCHECKED);
+   CheckDlgButton(IDC_START_MINIMIZED_CBX, bMinimized ? BST_CHECKED : BST_UNCHECKED);
    if (bMinimized) MinimizeToTray();
 
    return 0;
@@ -171,12 +171,12 @@ void CStayAwakeDlg::OnKillfocusIntervalMin()
 {
    int nInterval{};
 
-   nInterval = GetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, nullptr, FALSE);
+   nInterval = GetDlgItemInt(IDC_INTERVAL_MIN_EDIT, nullptr, FALSE);
 
    if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MIN)->m_hWnd, INTERVAL_WARN_TITLE, INTERVAL_WARNING.c_str());
-      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
+      Utils::showEditBalloonTip(GetDlgItem(IDC_INTERVAL_MIN_EDIT)->m_hWnd, INTERVAL_WARN_TITLE, INTERVAL_WARNING.c_str());
+      SetDlgItemInt(IDC_INTERVAL_MIN_EDIT, m_IntervalMinSeconds, FALSE);
       return;
    }
 
@@ -188,12 +188,12 @@ void CStayAwakeDlg::OnKillfocusIntervalMax()
 {
    int nInterval{};
 
-   nInterval = GetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, nullptr, FALSE);
+   nInterval = GetDlgItemInt(IDC_INTERVAL_MAX_EDIT, nullptr, FALSE);
 
    if (nInterval < MIN_PERIOD || nInterval > MAX_PERIOD)
    {
-      Utils::showEditBalloonTip(GetDlgItem(IDC_STAYAWAKE_INTERVAL_MAX)->m_hWnd, INTERVAL_WARN_TITLE, INTERVAL_WARNING.c_str());
-      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
+      Utils::showEditBalloonTip(GetDlgItem(IDC_INTERVAL_MAX_EDIT)->m_hWnd, INTERVAL_WARN_TITLE, INTERVAL_WARNING.c_str());
+      SetDlgItemInt(IDC_INTERVAL_MAX_EDIT, m_IntervalMaxSeconds, FALSE);
       return;
    }
 
@@ -201,7 +201,7 @@ void CStayAwakeDlg::OnKillfocusIntervalMax()
 }
 
 
-void CStayAwakeDlg::OnSetupKeyCodesRosterClicked()
+void CStayAwakeDlg::OnSelectInputOptionsClicked()
 {
    CSelectKeyCodesDlg dlgSelectKeyCodes(this, m_AwakeCore);
 
@@ -253,7 +253,7 @@ void CStayAwakeDlg::InitAwakes()
    InitRosterKeyCodes();
    SimulateAwakeKeyPress();
 
-   SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
+   SetDlgItemText(IDC_PAUSE_RESUME_BTN, BTN_TEXT_PAUSE);
    m_AwakeCore.SetPreference(PREF_AWAKE_PAUSED, L"N");
 }
 
@@ -276,8 +276,8 @@ void CStayAwakeDlg::InitTrayIcon()
 void CStayAwakeDlg::MinimizeToTray()
 {
    if (m_bMinimized) return;
-   SendDlgItemMessage(IDC_STAYAWAKE_INTERVAL_MIN, EM_HIDEBALLOONTIP, 0, 0);
-   SendDlgItemMessage(IDC_STAYAWAKE_INTERVAL_MAX, EM_HIDEBALLOONTIP, 0, 0);
+   SendDlgItemMessage(IDC_INTERVAL_MIN_EDIT, EM_HIDEBALLOONTIP, 0, 0);
+   SendDlgItemMessage(IDC_INTERVAL_MAX_EDIT, EM_HIDEBALLOONTIP, 0, 0);
 
    if (!Shell_NotifyIcon(NIM_ADD, &m_TrayData))
       MessageBox(L"Unable to Display Tray Icon", L"Error!");
@@ -320,7 +320,7 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
 
    if (m_bSystemLocked)
    {
-      SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, L"PAUSED since Windows is LOCKED");
+      SetDlgItemText(IDC_NEXT_EVENT_TIME_INFO, L"PAUSED since Windows is LOCKED");
       return;
    }
 
@@ -331,14 +331,14 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
 
    SYSTEMTIME lastTime{};
    GetLocalTime(&lastTime);
-   SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
+   SetDlgItemText(IDC_LAST_EVENT_TIME_INFO, Utils::formatSystemTime(lastTime, L"Last StayAwake event").c_str());
 
 #ifdef DEBUG_DISPLAY_IDLE_TICKS
    Sleep((rand() % 20) + 1); // simulate a small delay to get a more accurate idle time
    ULONGLONG idleTime = m_AwakeCore.GetIdleTimeMilliseconds();
-   SetDlgItemText(IDC_STAYAWAKE_LAST_KEYCODE, (L"[" + sAwakeKeyCode + L":" + to_wstring(idleTime) + L" ms]").c_str());
+   SetDlgItemText(IDC_LAST_EVENT_INPUT_INFO, (L"[" + sAwakeKeyCode + L":" + to_wstring(idleTime) + L" ms]").c_str());
 #else
-   SetDlgItemText(IDC_STAYAWAKE_LAST_KEYCODE, (L"[" + sAwakeKeyCode + L"]").c_str());
+   SetDlgItemText(IDC_LAST_EVENT_INPUT_INFO, (L"[" + sAwakeKeyCode + L"]").c_str());
 #endif
 
    UINT nTimerSeconds{ m_IntervalMinSeconds };
@@ -350,11 +350,11 @@ void CStayAwakeDlg::SimulateAwakeKeyPress()
    SYSTEMTIME nextTime{};
    GetSystemTime(&nextTime);
    Utils::addSecondsToTime(nextTime, nTimerSeconds);
-   SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
+   SetDlgItemText(IDC_NEXT_EVENT_TIME_INFO, Utils::formatSystemTime(nextTime, L"Next StayAwake event").c_str());
 }
 
 
-void CStayAwakeDlg::OnSetInterval()
+void CStayAwakeDlg::OnSetTimerClicked()
 {
    OnKillfocusIntervalMin();
    OnKillfocusIntervalMax();
@@ -365,8 +365,8 @@ void CStayAwakeDlg::OnSetInterval()
       m_IntervalMinSeconds = m_IntervalMaxSeconds;
       m_IntervalMaxSeconds = nTemp;
 
-      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MIN, m_IntervalMinSeconds, FALSE);
-      SetDlgItemInt(IDC_STAYAWAKE_INTERVAL_MAX, m_IntervalMaxSeconds, FALSE);
+      SetDlgItemInt(IDC_INTERVAL_MIN_EDIT, m_IntervalMinSeconds, FALSE);
+      SetDlgItemInt(IDC_INTERVAL_MAX_EDIT, m_IntervalMaxSeconds, FALSE);
    }
 
    m_AwakeCore.SetPreference(PREF_INTERVAL_MINIMUM, to_wstring(m_IntervalMinSeconds));
@@ -382,7 +382,7 @@ void CStayAwakeDlg::OnClickedAboutButton()
    dlgAbout.DoModal();
 }
 
-void CStayAwakeDlg::OnPauseResume()
+void CStayAwakeDlg::OnPauseResumeClicked()
 {
    if (IsTimerPaused())
    {
@@ -392,7 +392,7 @@ void CStayAwakeDlg::OnPauseResume()
    {
       KillTimer(m_TimerID);
 
-      SetDlgItemText(IDC_STAYAWAKE_PAUSE_RESUME_BTN, BTN_TEXT_RESUME);
+      SetDlgItemText(IDC_PAUSE_RESUME_BTN, BTN_TEXT_RESUME);
       m_AwakeCore.SetPreference(PREF_AWAKE_PAUSED, L"Y");
       ShowPausedInfo(false);
    }
@@ -406,14 +406,14 @@ bool CStayAwakeDlg::IsTimerPaused()
 void CStayAwakeDlg::ShowPausedInfo(bool both)
 {
    if (both)
-      SetDlgItemText(IDC_STAYAWAKE_LAST_EVENT, L"Last StayAwake event:         PAUSED");
+      SetDlgItemText(IDC_LAST_EVENT_TIME_INFO, L"Last StayAwake event:         PAUSED");
 
-   SetDlgItemText(IDC_STAYAWAKE_NEXT_EVENT, L"Next StayAwake event:         PAUSED");
+   SetDlgItemText(IDC_NEXT_EVENT_TIME_INFO, L"Next StayAwake event:         PAUSED");
 }
 
 void CStayAwakeDlg::OnStartMinimized()
 {
-   m_AwakeCore.SetPreference(PREF_START_MINIMIZED, (IsDlgButtonChecked(IDC_START_MINIMIZED) == BST_CHECKED) ? L"Y" : L"N");
+   m_AwakeCore.SetPreference(PREF_START_MINIMIZED, (IsDlgButtonChecked(IDC_START_MINIMIZED_CBX) == BST_CHECKED) ? L"Y" : L"N");
 }
 
 void CStayAwakeDlg::OnSessionChange(UINT nSessionState, UINT nId)
