@@ -46,7 +46,7 @@ bool StayAwakeCore::CheckSelectedKeyCodes(wstring sKeyCodes)
 {
    return (sKeyCodes.length() == LEN_ROSTER_KEYCODES &&
       sKeyCodes != wstring(LEN_ROSTER_KEYCODES, L'0') &&
-      sKeyCodes.find_first_not_of(L"01") == std::string::npos);
+      sKeyCodes.find_first_not_of(L"01") == string::npos);
 }
 
 bool StayAwakeCore::SaveSelectedKeyCodes(wstring sKeyCodes)
