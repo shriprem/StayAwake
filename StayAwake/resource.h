@@ -23,7 +23,8 @@
 #define IDC_MINIMIZE_BTN                1012
 #define IDC_EXIT_BTN                    1013
 #define IDC_START_MINIMIZED_CBX         1014
-#define IDC_ABOUT_BTN                   1015
+#define IDC_UPDATE_CHECK_BTN            1015
+#define IDC_ABOUT_BTN                   1016
 
 #define IDC_KEY_SCROLL_LOCK             1101
 #define IDC_KEY_VOLUME_UP_DOWN          1102
