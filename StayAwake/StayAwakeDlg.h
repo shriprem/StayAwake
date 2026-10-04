@@ -82,4 +82,6 @@ private:
    void ShowPausedInfo(bool both);
 
    bool IsTimerPaused();
+public:
+    afx_msg void OnUpdateCheckClicked();
 };

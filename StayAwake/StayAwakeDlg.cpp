@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "framework.h"
+#include "afxdialogex.h"
+
 #include "StayAwake.h"
 #include "StayAwakeDlg.h"
 #include "SelectKeyCodesDlg.h"
 #include "StayAwakeAboutDlg.h"
-#include "afxdialogex.h"
+#include "VersionUpdate.h"
 #include "Utils.h"
 
 #include <PathCch.h>
@@ -47,6 +49,7 @@ BEGIN_MESSAGE_MAP(CStayAwakeDlg, CDialogEx)
    ON_BN_CLICKED(IDC_PAUSE_RESUME_BTN, &CStayAwakeDlg::OnPauseResumeClicked)
    ON_BN_CLICKED(IDC_START_MINIMIZED_CBX, &CStayAwakeDlg::OnStartMinimized)
    ON_WM_WTSSESSION_CHANGE()
+   ON_BN_CLICKED(IDC_UPDATE_CHECK_BTN, &CStayAwakeDlg::OnUpdateCheckClicked)
 END_MESSAGE_MAP()
 
 
@@ -430,4 +433,8 @@ void CStayAwakeDlg::OnSessionChange(UINT nSessionState, UINT nId)
    }
 
    CDialogEx::OnSessionChange(nSessionState, nId);
+}
+
+void CStayAwakeDlg::OnUpdateCheckClicked()
+{
 }
