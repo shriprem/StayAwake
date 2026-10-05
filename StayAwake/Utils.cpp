@@ -145,3 +145,7 @@ wstring Utils::getVersionInfo(HINSTANCE hApp, LPCWSTR key) {
 
    return sVersionInfo;
 }
+
+wstring Utils::getAppVersion(HINSTANCE hApp) {
+   return getVersionInfo(hApp, L"FileVersion");
+}
