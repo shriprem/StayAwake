@@ -22,6 +22,19 @@ CUpdateCheckDlg::~CUpdateCheckDlg()
 {
 }
 
+bool CUpdateCheckDlg::IsNewerVersionAvailable(wstring& currentVersion, wstring& latestVersion)
+{
+   currentVersion = Utils::getAppVersion(theApp.m_hInstance);
+
+   VersionUpdate versionUpdate;
+   latestVersion = versionUpdate.GetVersion();
+
+   if (latestVersion.empty() || currentVersion.empty())
+      return false;
+
+   return (latestVersion != currentVersion);
+}
+
 void CUpdateCheckDlg::DoDataExchange(CDataExchange* pDX)
 {
    CDialogEx::DoDataExchange(pDX);
@@ -41,17 +54,13 @@ BOOL CUpdateCheckDlg::OnInitDialog()
 {
    CDialogEx::OnInitDialog();
 
-   wstring currentVersionInfo{ Utils::getVersionInfo(theApp.m_hInstance, L"FileVersion") };
+   wstring currentVersion{}, latestVersion{};
+   bool bNewer = IsNewerVersionAvailable(currentVersion, latestVersion);
 
-   VersionUpdate versionUpdate;
-   wstring latestVersionInfo{ versionUpdate.GetVersion() };
-
-   SetDlgItemText(IDC_INSTALLED_VERSION_INFO, currentVersionInfo.c_str());
-   SetDlgItemText(IDC_LATEST_VERSION_INFO, latestVersionInfo.c_str());
+   SetDlgItemText(IDC_INSTALLED_VERSION_INFO, currentVersion.c_str());
+   SetDlgItemText(IDC_LATEST_VERSION_INFO, latestVersion.c_str());
    SetDlgItemText(IDC_VERSION_CHECK_STATUS,
-      (latestVersionInfo == currentVersionInfo) ?
-      L"This is the latest available version." :
-      L"A newer version is available. Click the link below.");
+      bNewer ? L"A newer version is available. Click the link below." : L"This is the latest available version.");
 
    BOOL bStartUpdateCheck = (m_AwakeCore.GetPreference(PREF_START_UPDATE_CHECK, L"N") == L"Y");
    CheckDlgButton(IDC_START_VERSION_CHECK_CBX, bStartUpdateCheck ? BST_CHECKED : BST_UNCHECKED);

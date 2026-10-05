@@ -136,7 +136,12 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
       InitAwakes();
 
    if (m_AwakeCore.GetPreference(PREF_START_UPDATE_CHECK, L"N") == L"Y")
-      OnUpdateCheckClicked();
+   {
+      wstring currentVersion{}, latestVersion{};
+      bool bNewer = CUpdateCheckDlg::IsNewerVersionAvailable(currentVersion, latestVersion);
+
+      if (bNewer) OnUpdateCheckClicked();
+   }
 
    BOOL bMinimized = (m_AwakeCore.GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
    CheckDlgButton(IDC_START_MINIMIZED_CBX, bMinimized ? BST_CHECKED : BST_UNCHECKED);

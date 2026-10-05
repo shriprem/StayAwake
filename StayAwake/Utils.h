@@ -23,4 +23,5 @@ namespace Utils {
 
    int getProcessRunCount(wstring sBaseName);
    wstring getVersionInfo(HINSTANCE hApp, LPCWSTR key);
+   wstring getAppVersion(HINSTANCE hApp);
 }

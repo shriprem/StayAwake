@@ -36,7 +36,7 @@ BOOL CAboutDlg::OnInitDialog()
 #endif // _WIN64
 
    SetDlgItemText(IDC_ABOUT_NAME, Utils::getVersionInfo(theApp.m_hInstance, L"FileDescription").c_str());
-   SetDlgItemText(IDC_ABOUT_VERSION, (L"Version: " + Utils::getVersionInfo(theApp.m_hInstance, L"FileVersion") + buildBit).c_str());
+   SetDlgItemText(IDC_ABOUT_VERSION, (L"Version: " + Utils::getAppVersion(theApp.m_hInstance) + buildBit).c_str());
    SetDlgItemText(IDC_ABOUT_BUILD_TIME, (wstring{ L"Last code update: " } + LAST_CODE_UPDATE_TIME).c_str());
    SetDlgItemText(IDC_ABOUT_ATTRIBUTION, Utils::getVersionInfo(theApp.m_hInstance, L"LegalCopyright").c_str());
 
