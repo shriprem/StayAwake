@@ -29,12 +29,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#ifndef APSTUDIO_INVOKED\r\n"
     "#include ""targetver.h""\r\n"
@@ -44,7 +44,7 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -145,6 +145,7 @@ BEGIN
     PUSHBUTTON      "Select &All",IDC_KEY_SELECT_ALL_BTN,225,130,85,14
     DEFPUSHBUTTON   "A&pply",IDOK,225,155,85,14
     PUSHBUTTON      "&Cancel",IDCANCEL,225,180,85,14
+    PUSHBUTTON      "...",IDC_INPUT_OPTIONS_INFO_BTN,312,2,15,13,BS_BITMAP
 END
 
 IDD_UPDATE_CHECK_DIALOG DIALOGEX 0, 0, 170, 115
@@ -286,6 +287,7 @@ IDR_MAINFRAME           ICON                    "res\\StayAwake.ico"
 //
 
 IDB_ABOUT_BITMAP        BITMAP                  "res\\about.bmp"
+IDB_INFO_BITMAP         BITMAP                  "res\\information.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

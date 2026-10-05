@@ -12,6 +12,7 @@
 #define IDI_ICON1                       133
 #define IDR_MAINFRAME                   133
 #define IDB_ABOUT_BITMAP                134
+#define IDB_INFO_BITMAP                 135
 
 #define IDC_SELECT_INPUT_OPTIONS_BTN    1001
 #define IDC_INTERVAL_MIN_EDIT           1002
@@ -58,6 +59,8 @@
 #define IDC_KEY_SELECT_ALL_UNASSGND_BTN 1152
 #define IDC_KEY_SELECT_ALL_EXT_FN_BTN   1153
 #define IDC_KEY_SELECT_ALL_BTN          1154
+#define IDC_INPUT_OPTIONS_INFO_BTN      1155
+
 
 #define IDC_INSTALLED_VERSION_INFO      1201
 #define IDC_LATEST_VERSION_INFO         1202

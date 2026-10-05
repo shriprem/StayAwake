@@ -29,6 +29,7 @@ protected:
 	afx_msg void OnClickedKeySelectNoneBtn();
 	afx_msg void OnClickedSelectAllUnassignedKeys();
 	afx_msg void OnClickedSelectAllExtFnKeys();
+	afx_msg void OnClickedInputOptionsInfoBtn();
 	afx_msg void OnOK();
 
 	DECLARE_MESSAGE_MAP()
