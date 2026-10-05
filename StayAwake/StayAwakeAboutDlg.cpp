@@ -46,7 +46,8 @@ BOOL CAboutDlg::OnInitDialog()
 
 afx_msg void CAboutDlg::OnProdUrlClick(NMHDR* pNotifyStruct, LRESULT* result)
 {
-   ShellExecute(NULL, L"open", Utils::getVersionInfo(theApp.m_hInstance, L"CompanyName").c_str(), NULL, NULL, SW_SHOW);
+   ShellExecute(nullptr, L"open", Utils::getVersionInfo(theApp.m_hInstance, L"CompanyName").c_str(), nullptr, nullptr, SW_SHOW);
+   *result = 0;
 }
 
 

@@ -27,6 +27,7 @@ constexpr auto PREF_MULTI_INSTANCE = L"MultipleInstancesAllowed";
 constexpr auto PREF_INTERVAL_LEGACY = L"TimerIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MINIMUM = L"MinimumIntervalInSeconds";
 constexpr auto PREF_INTERVAL_MAXIMUM = L"MaximumIntervalInSeconds";
+constexpr auto PREF_START_UPDATE_CHECK = L"StartCheckUpdates";
 
 constexpr auto MIN_PERIOD{ 10 };
 constexpr auto MAX_PERIOD{ 9990 };

@@ -45,6 +45,9 @@
     <ClInclude Include="VersionUpdate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UpdateCheckDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StayAwake.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VersionUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateCheckDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
