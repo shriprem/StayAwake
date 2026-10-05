@@ -33,6 +33,5 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 
-private:
 	void CheckAllBoxes(const wstring& sSelectedKeyCodes, int start = IDC_KEY_SCROLL_LOCK, int endNext = IDC_KEY_SCROLL_LOCK + LEN_ROSTER_KEYCODES);
 };

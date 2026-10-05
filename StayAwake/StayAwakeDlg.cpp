@@ -6,7 +6,7 @@
 #include "StayAwakeDlg.h"
 #include "SelectKeyCodesDlg.h"
 #include "StayAwakeAboutDlg.h"
-#include "VersionUpdate.h"
+#include "UpdateCheckDlg.h"
 #include "Utils.h"
 
 #include <PathCch.h>
@@ -134,6 +134,9 @@ afx_msg LRESULT CStayAwakeDlg::OnPostOpen(WPARAM wParam, LPARAM lParam)
       ShowPausedInfo(TRUE);
    else
       InitAwakes();
+
+   if (m_AwakeCore.GetPreference(PREF_START_UPDATE_CHECK, L"N") == L"Y")
+      OnUpdateCheckClicked();
 
    BOOL bMinimized = (m_AwakeCore.GetPreference(PREF_START_MINIMIZED, L"N") == L"Y");
    CheckDlgButton(IDC_START_MINIMIZED_CBX, bMinimized ? BST_CHECKED : BST_UNCHECKED);
@@ -437,4 +440,6 @@ void CStayAwakeDlg::OnSessionChange(UINT nSessionState, UINT nId)
 
 void CStayAwakeDlg::OnUpdateCheckClicked()
 {
+   CUpdateCheckDlg dlgUpdateCheck(this, m_AwakeCore);
+   dlgUpdateCheck.DoModal();
 }
