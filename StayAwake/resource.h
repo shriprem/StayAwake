@@ -7,6 +7,7 @@
 #define IDS_ABOUTBOX                    101
 #define IDD_STAYAWAKE_DIALOG            102
 #define IDD_SELECT_KEYCODES_DIALOG      103
+#define IDD_UPDATE_CHECK_DIALOG         104
 #define IDR_MENU1                       130
 #define IDI_ICON1                       133
 #define IDR_MAINFRAME                   133
@@ -58,12 +59,18 @@
 #define IDC_KEY_SELECT_ALL_EXT_FN_BTN   1153
 #define IDC_KEY_SELECT_ALL_BTN          1154
 
-#define IDC_ABOUT_NAME                  1201
-#define IDC_ABOUT_VERSION               1202
-#define IDC_ABOUT_BUILD_TIME            1203
-#define IDC_ABOUT_ATTRIBUTION           1204
-#define IDC_ABOUT_PROD_URL              1205
-#define IDC_ABOUT_PROD_REQ              1206
+#define IDC_INSTALLED_VERSION_INFO      1201
+#define IDC_LATEST_VERSION_INFO         1202
+#define IDC_VERSION_CHECK_STATUS        1203
+#define IDC_LATEST_RELEASE_URL          1204
+#define IDC_START_VERSION_CHECK_CBX     1205
+
+#define IDC_ABOUT_NAME                  1301
+#define IDC_ABOUT_VERSION               1302
+#define IDC_ABOUT_BUILD_TIME            1303
+#define IDC_ABOUT_ATTRIBUTION           1304
+#define IDC_ABOUT_PROD_URL              1305
+#define IDC_ABOUT_PROD_REQ              1306
 
 #define IDM_EXIT                        32771
 #define IDM_RESTORE                     32772
