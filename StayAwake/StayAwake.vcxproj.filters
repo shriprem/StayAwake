@@ -48,6 +48,9 @@
     <ClInclude Include="UpdateCheckDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StayAwake.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StayAwake.cpp">
@@ -93,6 +96,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\about.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\information.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -32,6 +32,7 @@ BEGIN_MESSAGE_MAP(CSelectKeyCodesDlg, CDialogEx)
    ON_BN_CLICKED(IDC_KEY_SELECT_NONE_BTN, &CSelectKeyCodesDlg::OnClickedKeySelectNoneBtn)
    ON_BN_CLICKED(IDC_KEY_SELECT_ALL_UNASSGND_BTN, &CSelectKeyCodesDlg::OnClickedSelectAllUnassignedKeys)
    ON_BN_CLICKED(IDC_KEY_SELECT_ALL_EXT_FN_BTN, &CSelectKeyCodesDlg::OnClickedSelectAllExtFnKeys)
+   ON_BN_CLICKED(IDC_INPUT_OPTIONS_INFO_BTN, &CSelectKeyCodesDlg::OnClickedInputOptionsInfoBtn)
 END_MESSAGE_MAP()
 
 
@@ -41,6 +42,9 @@ BOOL CSelectKeyCodesDlg::OnInitDialog()
 
    SetIcon(m_hIcon, TRUE);       // Set big icon
    SetIcon(m_hIcon, FALSE);      // Set small icon
+
+   Utils::addTooltip(theApp.m_hInstance, m_hWnd, IDC_INPUT_OPTIONS_INFO_BTN, L"", L"View Readme Online", 3, TRUE);
+   Utils::loadBitmap(theApp.m_hInstance, m_hWnd, IDC_INPUT_OPTIONS_INFO_BTN, IDB_INFO_BITMAP);
 
    CheckAllBoxes(m_AwakeCore.GetSelectedKeyCodes());
 
@@ -95,3 +99,8 @@ void CSelectKeyCodesDlg::OnClickedSelectAllExtFnKeys()
    CheckAllBoxes(wstring(LEN_ROSTER_KEYCODES, L'1'), IDC_KEY_F13, IDC_MOUSE_MOVE);
 }
 
+
+void CSelectKeyCodesDlg::OnClickedInputOptionsInfoBtn()
+{
+   ShellExecute(nullptr, L"open", L"https://github.com/shriprem/StayAwake/blob/Version2.0/InputOptions.md", nullptr, nullptr, SW_SHOW);
+}
