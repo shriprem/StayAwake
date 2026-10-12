@@ -102,5 +102,5 @@ void CSelectKeyCodesDlg::OnClickedSelectAllExtFnKeys()
 
 void CSelectKeyCodesDlg::OnClickedInputOptionsInfoBtn()
 {
-   ShellExecute(nullptr, L"open", L"https://github.com/shriprem/StayAwake/blob/Version2.0/InputOptions.md", nullptr, nullptr, SW_SHOW);
+   ShellExecute(nullptr, L"open", L"https://github.com/shriprem/StayAwake/blob/main/InputOptions.md", nullptr, nullptr, SW_SHOW);
 }

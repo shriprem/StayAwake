@@ -48,6 +48,8 @@ This field allows you to specify the minimum interval between key simulations. T
 #### Maximum Awake Seconds
 This field allows you to specify the maximum interval between key simulations. The initial default value for this is 240 seconds (_i.e._, 4 minutes). However, you can change this to any value between 10 and 9990 seconds. Your new value will be saved and used the next time you run StayAwake.
 
+**Note**: If the value entered for *Maximum Awake Seconds* is less than the value for *Minimum Awake Seconds*, the *Maximum Awake Seconds* value will be automatically swapped with the *Minimum Awake Seconds* value.
+
 **Tip**: If Microsoft Teams is changing your status to _Away_ after 5 minutes (i.e., 300 seconds) of inactivity, consider setting the *Minimum Awake Seconds* to around 200 and the *Maximum Awake Seconds* to 310 or 320 or even 330 (i.e., a little over 300). This weighted range will cause your Teams status to briefly drift out of _Active_ status once in a while -- a more normal user behavior from your coworkers' perspective than a solid green status through an entire work day.
 
 #### Set Timer button

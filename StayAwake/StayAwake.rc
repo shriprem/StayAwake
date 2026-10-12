@@ -170,8 +170,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,3,0,0
- PRODUCTVERSION 1,3,0,0
+ FILEVERSION 1,5,0,0
+ PRODUCTVERSION 1,5,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -188,12 +188,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "https://github.com/shriprem/StayAwake"
             VALUE "FileDescription", "StayAwake"
-            VALUE "FileVersion", "1.3.0.0"
+            VALUE "FileVersion", "1.5.0.0"
             VALUE "InternalName", "StayAwake.exe"
             VALUE "LegalCopyright", "Copyright (C) 2026 by Shridhar Kumar"
             VALUE "OriginalFilename", "StayAwake.exe"
             VALUE "ProductName", "StayAwake"
-            VALUE "ProductVersion", "1.3.0.0"
+            VALUE "ProductVersion", "1.5.0.0"
         END
     END
     BLOCK "VarFileInfo"
